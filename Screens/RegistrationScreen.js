@@ -4,52 +4,37 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Keyboard,
 } from "react-native";
-import { useState } from "react";
-export default function RegistrationScreen() {
-  const [isShowKeyboard, setisShowKeyboard] = useState(false);
 
-  const hideKeyboard = () => {
-    setisShowKeyboard(false);
-    Keyboard.dismiss();
-  };
+export default function RegistrationScreen({
+  keyboardShowing,
+  keyboardStatus,
+  keyboardHide,
+}) {
   return (
-    <View style={{ ...styles.wrap, marginBottom: isShowKeyboard ? -155 : 0 }}>
+    <View style={{ ...styles.wrap, marginBottom: keyboardStatus ? -155 : 0 }}>
       <Text style={styles.registration}>Registration</Text>
       <View style={styles.form}>
         <TextInput
           style={styles.input}
           placeholder={"Login"}
-          onFocus={() => {
-            setisShowKeyboard(true);
-          }}
-          onSubmitEditing={() => {
-            setisShowKeyboard(false);
-          }}
+          onFocus={keyboardShowing}
+          onSubmitEditing={keyboardHide}
         />
         <TextInput
           style={styles.input}
           placeholder={"Email"}
-          onFocus={() => {
-            setisShowKeyboard(true);
-          }}
-          onSubmitEditing={() => {
-            setisShowKeyboard(false);
-          }}
+          onFocus={keyboardShowing}
+          onSubmitEditing={keyboardHide}
         />
         <TextInput
           style={styles.input}
           placeholder={"Password"}
-          onFocus={() => {
-            setisShowKeyboard(true);
-          }}
-          onSubmitEditing={() => {
-            setisShowKeyboard(false);
-          }}
+          onFocus={keyboardShowing}
+          onSubmitEditing={keyboardHide}
         />
         <TouchableOpacity
-          onPress={hideKeyboard}
+          onPress={keyboardHide}
           activeOpacity={0.7}
           style={styles.regBtn}
         >

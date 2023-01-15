@@ -1,28 +1,45 @@
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
-  TextInput,
-  Text,
-  View,
   ImageBackground,
   KeyboardAvoidingView,
   Dimensions,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+import { useState } from "react";
 import RegistrationScreen from "./Screens/RegistrationScreen";
+
 export default function App() {
+  const [isShowKeyboard, setisShowKeyboard] = useState(false);
+
+  const keyboardShowing = () => {
+    setisShowKeyboard(true);
+  };
+
+  const hideKeyboard = () => {
+    setisShowKeyboard(false);
+    Keyboard.dismiss();
+  };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <ImageBackground
-        style={styles.bgrImg}
-        source={require("./assets/img/Photo_BG.jpg")}
-      ></ImageBackground>
-      <RegistrationScreen />
-      <StatusBar style="auto" />
-    </KeyboardAvoidingView>
+    <TouchableWithoutFeedback onPress={hideKeyboard}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <ImageBackground
+          style={styles.bgrImg}
+          source={require("./assets/img/Photo_BG.jpg")}
+        ></ImageBackground>
+        <RegistrationScreen
+          keyboardStatus={isShowKeyboard}
+          keyboardHide={hideKeyboard}
+          keyboardShowing={keyboardShowing}
+        />
+        <StatusBar style="auto" />
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
