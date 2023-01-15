@@ -5,19 +5,24 @@ import {
   Text,
   View,
   ImageBackground,
+  KeyboardAvoidingView,
+  Dimensions,
+  Platform,
 } from "react-native";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 export default function App() {
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <ImageBackground
         style={styles.bgrImg}
         source={require("./assets/img/Photo_BG.jpg")}
-      >
-        <RegistrationScreen />
-      </ImageBackground>
+      ></ImageBackground>
+      <RegistrationScreen />
       <StatusBar style="auto" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -25,12 +30,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    // alignItems: "center",
-    // justifyContent: "center",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   bgrImg: {
-    flex: 1,
+    position: "absolute",
+    left: 0,
+    top: 0,
 
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height + 40,
+    flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
     alignItems: "center",
