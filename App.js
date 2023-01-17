@@ -51,16 +51,16 @@ export default function App() {
           style={styles.bgrImg}
           source={require("./assets/img/Photo_BG.jpg")}
         ></ImageBackground>
-        {/* <RegistrationScreen
-          checkKeyboardStatus={isShowKeyboard}
-          keyboardHide={hideKeyboard}
-          keyboardShowing={keyboardShowing}
-        /> */}
-        <LoginScreen
+        <RegistrationScreen
           checkKeyboardStatus={isShowKeyboard}
           keyboardHide={hideKeyboard}
           keyboardShowing={keyboardShowing}
         />
+        {/* <LoginScreen
+          checkKeyboardStatus={isShowKeyboard}
+          keyboardHide={hideKeyboard}
+          keyboardShowing={keyboardShowing}
+        /> */}
         <StatusBar style="auto" />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
