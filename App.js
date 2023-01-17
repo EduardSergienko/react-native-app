@@ -15,23 +15,12 @@ import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 
 export default function App() {
+  const [isShowKeyboard, setisShowKeyboard] = useState(false);
   const [fontsLoaded] = useFonts({
     "Roboto-Regulat": require("./fonts/Roboto-Regular.ttf"),
     "Roboto-Bold": require("./fonts/Roboto-Bold.ttf"),
     "Roboto-Medium": require("./fonts/Roboto-Medium.ttf"),
   });
-
-  const initialRegisterState = {
-    login: "",
-    email: "",
-    password: "",
-  };
-  const [isShowKeyboard, setisShowKeyboard] = useState(false);
-  const [isInputOnFocus, setIsInputOnFocus] = useState(false);
-  const [registerFormData, setregisterFormData] =
-    useState(initialRegisterState);
-  const [formData, setformData] = useState({});
-  const { login, password, email } = formData;
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -39,31 +28,15 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
-  const handleLoginText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, login: text }));
-  const handleEmailText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, email: text }));
-  const handlePasswordText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, password: text }));
+  const hideKeyboard = () => {
+    setisShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   const keyboardShowing = () => {
     setisShowKeyboard(true);
-    setIsInputOnFocus(true);
   };
 
-  const hideKeyboard = () => {
-    setisShowKeyboard(false);
-    setIsInputOnFocus(false);
-
-    Keyboard.dismiss();
-  };
-  const onFormSubmit = () => {
-    setformData(registerFormData);
-    setregisterFormData(initialRegisterState);
-
-    Keyboard.dismiss();
-  };
-  console.log("Credentials", `${login} + ${email} + ${password}`);
   if (!fontsLoaded) {
     return null;
   }
@@ -78,25 +51,16 @@ export default function App() {
           style={styles.bgrImg}
           source={require("./assets/img/Photo_BG.jpg")}
         ></ImageBackground>
-        <RegistrationScreen
-          keyboardStatus={isShowKeyboard}
+        {/* <RegistrationScreen
+          checkKeyboardStatus={isShowKeyboard}
           keyboardHide={hideKeyboard}
           keyboardShowing={keyboardShowing}
-          inputFocus={isInputOnFocus}
-          formData={registerFormData}
-          loginChange={handleLoginText}
-          emailChange={handleEmailText}
-          passwordChange={handlePasswordText}
-          onSubmit={onFormSubmit}
-        />
-        {/* <LoginScreen
-          keyboardStatus={isShowKeyboard}
-          keyboardHide={hideKeyboard}
-          keyboardShowing={keyboardShowing}
-          emailChange={handleEmailText}
-          passwordChange={handlePasswordText}
-          onSubmit={onFormSubmit}
         /> */}
+        <LoginScreen
+          checkKeyboardStatus={isShowKeyboard}
+          keyboardHide={hideKeyboard}
+          keyboardShowing={keyboardShowing}
+        />
         <StatusBar style="auto" />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

@@ -4,20 +4,39 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
+  Keyboard,
+  Image,
 } from "react-native";
 import { useState } from "react";
 
-export default function LoginScreen({
-  keyboardShowing,
-  keyboardStatus,
+export default function RegistrationScreen({
   keyboardHide,
+  checkKeyboardStatus,
+  keyboardShowing,
 }) {
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialRegisterState = {
+    email: "",
+    password: "",
+  };
+
+  const [registerFormData, setregisterFormData] =
+    useState(initialRegisterState);
+  const [formData, setformData] = useState({});
+  const { password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
+
+  const handleEmailText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, email: text }));
+  const handlePasswordText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, password: text }));
+
+  const onFormSubmit = () => {
+    setformData(registerFormData);
+    setregisterFormData(initialRegisterState);
+
+    Keyboard.dismiss();
+  };
 
   const handleShowPassword = () => {
     if (isPassworHiden) {
@@ -28,23 +47,20 @@ export default function LoginScreen({
       setTogleBtnText("Show");
     }
   };
+  console.log("Credentials", ` ${email} + ${password}`);
 
-  const handleLoginText = (text) => setLogin(text);
-  const handleEmailText = (text) => setEmail(text);
-  const handlePasswordText = (text) => setPassword(text);
-  const onLogin = () => {
-    Alert.alert("Credentials", `${login} + ${email} + ${password}`);
-  };
   return (
-    <View style={{ ...styles.wrap, marginBottom: keyboardStatus ? -155 : 0 }}>
-      <Text style={styles.registration}>Login</Text>
+    <View
+      style={{ ...styles.wrap, marginBottom: checkKeyboardStatus ? -200 : 0 }}
+    >
+      <Text style={styles.login}>Login</Text>
       <View style={styles.form}>
         <TextInput
           style={styles.input}
           placeholder="Email"
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
-          value={email}
+          value={registerFormData.email}
           onChangeText={handleEmailText}
         />
         <TextInput
@@ -53,15 +69,15 @@ export default function LoginScreen({
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
           secureTextEntry={isPassworHiden}
-          value={password}
+          value={registerFormData.password}
           onChangeText={handlePasswordText}
         />
         <TouchableOpacity
-          onPress={(keyboardHide, onLogin)}
+          onPress={(keyboardHide, onFormSubmit)}
           activeOpacity={0.7}
           style={styles.regBtn}
         >
-          <Text style={styles.btnTitle}>Login</Text>
+          <Text style={styles.btnTitle}>Log in</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleShowPassword}
@@ -81,7 +97,7 @@ const styles = StyleSheet.create({
   wrap: {
     display: "flex",
     backgroundColor: "#FFFFFF",
-    paddingTop: 31,
+    paddingTop: 92,
     paddingBottom: 50,
 
     width: "100%",
@@ -89,7 +105,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     alignItems: "center",
   },
-  registration: {
+  login: {
+    fontFamily: "Roboto-Bold",
     fontWeight: "500",
     fontSize: 30,
     lineHeight: 35,
@@ -117,9 +134,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6C00",
     borderRadius: 100,
     paddingVertical: 16,
-    marginBottom: 43,
+    marginTop: 43,
   },
   btnTitle: {
+    fontFamily: "Roboto-Regulat",
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 19,
@@ -127,6 +145,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   signInLink: {
+    fontFamily: "Roboto-Regulat",
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 19,
@@ -138,7 +157,7 @@ const styles = StyleSheet.create({
   passwordVisibleTogle: {
     position: "absolute",
     right: 15,
-    bottom: 110,
+    bottom: 120,
   },
   passwordVisibleTogleText: {
     fontWeight: "400",

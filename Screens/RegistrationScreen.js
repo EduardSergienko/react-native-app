@@ -4,24 +4,42 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
+  Keyboard,
   Image,
 } from "react-native";
 import { useState } from "react";
 
 export default function RegistrationScreen({
-  keyboardShowing,
-  keyboardStatus,
   keyboardHide,
-  formData,
-  loginChange,
-  emailChange,
-  passwordChange,
-  onSubmit,
-  inputFocus,
+  checkKeyboardStatus,
+  keyboardShowing,
 }) {
+  const initialRegisterState = {
+    login: "",
+    email: "",
+    password: "",
+  };
+
+  const [registerFormData, setregisterFormData] =
+    useState(initialRegisterState);
+  const [formData, setformData] = useState({});
+  const { login, password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
+
+  const handleLoginText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, login: text }));
+  const handleEmailText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, email: text }));
+  const handlePasswordText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, password: text }));
+
+  const onFormSubmit = () => {
+    setformData(registerFormData);
+    setregisterFormData(initialRegisterState);
+
+    Keyboard.dismiss();
+  };
 
   const handleShowPassword = () => {
     if (isPassworHiden) {
@@ -32,9 +50,12 @@ export default function RegistrationScreen({
       setTogleBtnText("Show");
     }
   };
+  console.log("Credentials", `${login} + ${email} + ${password}`);
 
   return (
-    <View style={{ ...styles.wrap, marginBottom: keyboardStatus ? -155 : 0 }}>
+    <View
+      style={{ ...styles.wrap, marginBottom: checkKeyboardStatus ? -200 : 0 }}
+    >
       <Text style={styles.registration}>Registration</Text>
       <View style={styles.form}>
         <TextInput
@@ -42,8 +63,8 @@ export default function RegistrationScreen({
           placeholder="Login"
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
-          onChangeText={loginChange}
-          value={formData.login}
+          onChangeText={handleLoginText}
+          value={registerFormData.login}
           name="Login"
         />
         <TextInput
@@ -51,8 +72,8 @@ export default function RegistrationScreen({
           placeholder="Email"
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
-          value={formData.email}
-          onChangeText={emailChange}
+          value={registerFormData.email}
+          onChangeText={handleEmailText}
         />
         <TextInput
           style={styles.input}
@@ -60,11 +81,11 @@ export default function RegistrationScreen({
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
           secureTextEntry={isPassworHiden}
-          value={formData.password}
-          onChangeText={passwordChange}
+          value={registerFormData.password}
+          onChangeText={handlePasswordText}
         />
         <TouchableOpacity
-          onPress={(keyboardHide, onSubmit)}
+          onPress={(keyboardHide, onFormSubmit)}
           activeOpacity={0.7}
           style={styles.regBtn}
         >
