@@ -5,21 +5,17 @@ import {
   Text,
   TouchableOpacity,
   Alert,
-  Image,
 } from "react-native";
 import { useState } from "react";
 
-export default function RegistrationScreen({
+export default function LoginScreen({
   keyboardShowing,
   keyboardStatus,
   keyboardHide,
-  formData,
-  loginChange,
-  emailChange,
-  passwordChange,
-  onSubmit,
-  inputFocus,
 }) {
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
 
@@ -33,26 +29,23 @@ export default function RegistrationScreen({
     }
   };
 
+  const handleLoginText = (text) => setLogin(text);
+  const handleEmailText = (text) => setEmail(text);
+  const handlePasswordText = (text) => setPassword(text);
+  const onLogin = () => {
+    Alert.alert("Credentials", `${login} + ${email} + ${password}`);
+  };
   return (
     <View style={{ ...styles.wrap, marginBottom: keyboardStatus ? -155 : 0 }}>
-      <Text style={styles.registration}>Registration</Text>
+      <Text style={styles.registration}>Login</Text>
       <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Login"
-          onFocus={keyboardShowing}
-          onSubmitEditing={keyboardHide}
-          onChangeText={loginChange}
-          value={formData.login}
-          name="Login"
-        />
         <TextInput
           style={styles.input}
           placeholder="Email"
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
-          value={formData.email}
-          onChangeText={emailChange}
+          value={email}
+          onChangeText={handleEmailText}
         />
         <TextInput
           style={styles.input}
@@ -60,15 +53,15 @@ export default function RegistrationScreen({
           onFocus={keyboardShowing}
           onSubmitEditing={keyboardHide}
           secureTextEntry={isPassworHiden}
-          value={formData.password}
-          onChangeText={passwordChange}
+          value={password}
+          onChangeText={handlePasswordText}
         />
         <TouchableOpacity
-          onPress={(keyboardHide, onSubmit)}
+          onPress={(keyboardHide, onLogin)}
           activeOpacity={0.7}
           style={styles.regBtn}
         >
-          <Text style={styles.btnTitle}>Register</Text>
+          <Text style={styles.btnTitle}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleShowPassword}
@@ -79,10 +72,7 @@ export default function RegistrationScreen({
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.signInLink}>Already have an account? Sign in</Text>
-      <View style={styles.avatarContainer}>
-        <Image style={styles.addAvatar} source={require("../img/add.png")} />
-      </View>
+      <Text style={styles.signInLink}>Don't have an account? Sign up</Text>
     </View>
   );
 }
@@ -91,7 +81,7 @@ const styles = StyleSheet.create({
   wrap: {
     display: "flex",
     backgroundColor: "#FFFFFF",
-    paddingTop: 92,
+    paddingTop: 31,
     paddingBottom: 50,
 
     width: "100%",
@@ -100,7 +90,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   registration: {
-    fontFamily: "Roboto-Bold",
     fontWeight: "500",
     fontSize: 30,
     lineHeight: 35,
@@ -128,10 +117,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6C00",
     borderRadius: 100,
     paddingVertical: 16,
-    marginTop: 43,
+    marginBottom: 43,
   },
   btnTitle: {
-    fontFamily: "Roboto-Regulat",
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 19,
@@ -139,7 +127,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   signInLink: {
-    fontFamily: "Roboto-Regulat",
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 19,
@@ -151,25 +138,12 @@ const styles = StyleSheet.create({
   passwordVisibleTogle: {
     position: "absolute",
     right: 15,
-    bottom: 120,
+    bottom: 110,
   },
   passwordVisibleTogleText: {
     fontWeight: "400",
     fontSize: 16,
     lineHeight: 19,
     color: "#1B4371",
-  },
-  avatarContainer: {
-    position: "absolute",
-    top: "-15%",
-    width: 120,
-    height: 120,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-  },
-  addAvatar: {
-    position: "absolute",
-    right: "-10%",
-    bottom: "10%",
   },
 });
