@@ -1,6 +1,8 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 
@@ -10,7 +12,7 @@ export default function App() {
     "Roboto-Bold": require("./fonts/Roboto-Bold.ttf"),
     "Roboto-Medium": require("./fonts/Roboto-Medium.ttf"),
   });
-
+  const AuthStack = createNativeStackNavigator();
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -20,5 +22,18 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-  return <RegistrationScreen onLayoutRootView={onLayoutRootView} />;
+  return (
+    <NavigationContainer>
+      <AuthStack.Navigator>
+        <AuthStack.Screen
+          options={{ headerShown: false }}
+          name="Registration"
+          component={RegistrationScreen}
+        />
+        <AuthStack.Screen name="Login" component={LoginScreen} />
+        {/* <RegistrationScreen onLayoutRootView={onLayoutRootView} />
+        <LoginScreen onLayoutRootView={onLayoutRootView} /> */}
+      </AuthStack.Navigator>
+    </NavigationContainer>
+  );
 }

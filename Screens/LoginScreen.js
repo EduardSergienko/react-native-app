@@ -65,7 +65,7 @@ export default function RegistrationScreen({ onLayoutRootView }) {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         style={styles.container}
-        onLayout={onLayoutRootView}
+        // onLayout={onLayoutRootView}
       >
         <ImageBackground
           style={styles.bgrImg}
