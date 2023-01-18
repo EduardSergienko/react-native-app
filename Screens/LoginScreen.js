@@ -6,14 +6,15 @@ import {
   TouchableOpacity,
   Keyboard,
   Image,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  ImageBackground,
+  Dimensions,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 
-export default function RegistrationScreen({
-  keyboardHide,
-  checkKeyboardStatus,
-  keyboardShowing,
-}) {
+export default function RegistrationScreen({ onLayoutRootView }) {
   const initialRegisterState = {
     email: "",
     password: "",
@@ -25,11 +26,21 @@ export default function RegistrationScreen({
   const { password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
+  const [isShowKeyboard, setisShowKeyboard] = useState(false);
 
   const handleEmailText = (text) =>
     setregisterFormData((prevState) => ({ ...prevState, email: text }));
   const handlePasswordText = (text) =>
     setregisterFormData((prevState) => ({ ...prevState, password: text }));
+
+  const hideKeyboard = () => {
+    setisShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
+  const keyboardShowing = () => {
+    setisShowKeyboard(true);
+  };
 
   const onFormSubmit = () => {
     setformData(registerFormData);
@@ -50,54 +61,90 @@ export default function RegistrationScreen({
   console.log("Credentials", ` ${email} + ${password}`);
 
   return (
-    <View
-      style={{ ...styles.wrap, marginBottom: checkKeyboardStatus ? -200 : 0 }}
-    >
-      <Text style={styles.login}>Login</Text>
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          onFocus={keyboardShowing}
-          onSubmitEditing={keyboardHide}
-          value={registerFormData.email}
-          onChangeText={handleEmailText}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          onFocus={keyboardShowing}
-          onSubmitEditing={keyboardHide}
-          secureTextEntry={isPassworHiden}
-          value={registerFormData.password}
-          onChangeText={handlePasswordText}
-        />
-        <TouchableOpacity
-          onPress={(keyboardHide, onFormSubmit)}
-          activeOpacity={0.7}
-          style={styles.regBtn}
+    <TouchableWithoutFeedback onPress={hideKeyboard}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={styles.container}
+        onLayout={onLayoutRootView}
+      >
+        <ImageBackground
+          style={styles.bgrImg}
+          source={require("../assets/img/Photo_BG.jpg")}
+        ></ImageBackground>
+        <View
+          style={{
+            ...styles.wrap,
+            marginBottom: isShowKeyboard ? -200 : 0,
+          }}
         >
-          <Text style={styles.btnTitle}>Log in</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleShowPassword}
-          activeOpacity={0.7}
-          style={styles.passwordVisibleTogle}
-        >
-          <Text style={styles.passwordVisibleTogleText}>{togleBtnText}</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.registration}>Login</Text>
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              onFocus={keyboardShowing}
+              onSubmitEditing={hideKeyboard}
+              value={registerFormData.email}
+              onChangeText={handleEmailText}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              onFocus={keyboardShowing}
+              onSubmitEditing={hideKeyboard}
+              secureTextEntry={isPassworHiden}
+              value={registerFormData.password}
+              onChangeText={handlePasswordText}
+            />
+            <TouchableOpacity
+              onPress={(hideKeyboard, onFormSubmit)}
+              activeOpacity={0.7}
+              style={styles.regBtn}
+            >
+              <Text style={styles.btnTitle}>Register</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleShowPassword}
+              activeOpacity={0.7}
+              style={styles.passwordVisibleTogle}
+            >
+              <Text style={styles.passwordVisibleTogleText}>
+                {togleBtnText}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-      <Text style={styles.signInLink}>Don't have an account? Sign up</Text>
-    </View>
+          <Text style={styles.signInLink}>Don't have an account? Sign up</Text>
+        </View>
+        <StatusBar style="auto" />
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  bgrImg: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height + 40,
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
   wrap: {
     display: "flex",
     backgroundColor: "#FFFFFF",
-    paddingTop: 92,
+    paddingTop: 30,
     paddingBottom: 50,
 
     width: "100%",
@@ -105,7 +152,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     alignItems: "center",
   },
-  login: {
+  registration: {
     fontFamily: "Roboto-Bold",
     fontWeight: "500",
     fontSize: 30,
@@ -164,5 +211,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 19,
     color: "#1B4371",
+  },
+  avatarContainer: {
+    position: "absolute",
+    top: "-15%",
+    width: 120,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+  addAvatar: {
+    position: "absolute",
+    right: "-10%",
+    bottom: "10%",
   },
 });
