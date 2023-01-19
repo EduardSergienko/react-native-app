@@ -14,7 +14,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 
-export default function RegistrationScreen({ onLayoutRootView }) {
+export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const initialRegisterState = {
     login: "",
     email: "",
@@ -125,8 +125,12 @@ export default function RegistrationScreen({ onLayoutRootView }) {
               </Text>
             </TouchableOpacity>
           </View>
-
-          <Text style={styles.signInLink}>
+          <Text
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+            style={styles.signInLink}
+          >
             Already have an account? Sign in
           </Text>
           <View style={styles.avatarContainer}>
