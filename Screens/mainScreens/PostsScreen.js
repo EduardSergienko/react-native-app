@@ -1,5 +1,15 @@
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 
 export default function PostsScreen() {
-  return <Text>PostsScreen</Text>;
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>PostsScreen</Text>
+    </View>
+  );
 }
