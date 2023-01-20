@@ -44,7 +44,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const onFormSubmit = () => {
     setformData(registerFormData);
     setregisterFormData(initialRegisterState);
-
+    navigation.navigate("Home");
     Keyboard.dismiss();
   };
 
@@ -100,7 +100,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               activeOpacity={0.7}
               style={styles.regBtn}
             >
-              <Text style={styles.btnTitle}>Register</Text>
+              <Text style={styles.btnTitle}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleShowPassword}

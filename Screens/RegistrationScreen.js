@@ -48,7 +48,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const onFormSubmit = () => {
     setformData(registerFormData);
     setregisterFormData(initialRegisterState);
-
+    navigation.navigate("Home");
     Keyboard.dismiss();
   };
 

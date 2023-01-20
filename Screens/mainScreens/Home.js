@@ -8,12 +8,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity, Text } from "react-native";
 const NavTab = createBottomTabNavigator();
-export default function Home() {
+export default function Home({ navigation }) {
   return (
     <NavTab.Navigator
+      initialRouteName="Posts"
       screenOptions={{
         headerTitleAlign: "center",
-        tabBarStyle: { height: 70 },
+        // tabBarStyle: { height: 70 },
+        tabBarStyle: { paddingHorizontal: 70, height: 70 },
         tabBarShowLabel: false,
       }}
     >
@@ -25,7 +27,10 @@ export default function Home() {
             <AntDesign name="appstore-o" size={size} color={color} />
           ),
           headerRight: ({ focused, color, size }) => (
-            <TouchableOpacity style={{ paddingRight: 20 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Login")}
+              style={{ paddingRight: 20 }}
+            >
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
@@ -48,13 +53,21 @@ export default function Home() {
             />
           ),
         }}
-        name="Create"
+        name="Create Post"
         component={CreatePostScreen}
       />
       <NavTab.Screen
         options={{
           tabBarIcon: ({ focused, color, size }) => (
             <Feather name="user" size={size} color={color} />
+          ),
+          headerRight: ({ focused, color, size }) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Registration")}
+              style={{ paddingRight: 20 }}
+            >
+              <MaterialIcons name="logout" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
           ),
         }}
         name="Profile"
