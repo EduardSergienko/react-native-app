@@ -5,51 +5,102 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  ScrollView,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
-
+import * as MediaLibrary from "expo-media-library";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function CreatePostScreen() {
+  const [hasPermission, setHasPermission] = useState(null);
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
-  console.log(photo);
+  const [photoAction, setphotoAction] = useState("Load photo");
+  const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+      if (status === "granted") {
+        setHasPermission("granted");
+      }
+    })();
+  }, []);
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
     setphoto(photo.uri);
+    setphotoAction("Edit photo");
+    setisCreateBtnDisabled(false);
+  };
+  const takeNewPhoto = () => {
+    setphoto(null);
+    setphotoAction("Load photo");
+    setisCreateBtnDisabled(true);
   };
 
   return (
-    <View style={styles.container}>
-      <Camera
-        onCameraReady={true}
-        ref={setcameraData}
-        type={CameraType.back}
-        style={styles.camera}
-      >
-        <View style={styles.photoContainer}>
-          <Image style={{ width: 150, height: 150 }} source={{ uri: photo }} />
-        </View>
-        <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
-          <Ionicons name="md-camera-sharp" size={24} color="grey" />
+    <ScrollView showsVerticalScrollIndica style={styles.container}>
+      <View style={{ borderWidth: 0, borderRadius: 8, overflow: "hidden" }}>
+        <Camera
+          ref={setcameraData}
+          type={CameraType.back}
+          style={styles.camera}
+        >
+          {photo && (
+            <View style={styles.photoContainer}>
+              <Image
+                style={{ width: "100%", height: "100%" }}
+                source={{ uri: photo }}
+              />
+              <TouchableOpacity
+                onPress={takeNewPhoto}
+                style={styles.makeNewPhoto}
+              >
+                <Ionicons name="md-camera-sharp" size={30} color="white" />
+              </TouchableOpacity>
+            </View>
+          )}
+          {!photo && (
+            <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
+              <Ionicons name="md-camera-sharp" size={30} color="white" />
+            </TouchableOpacity>
+          )}
+        </Camera>
+      </View>
+
+      <Text style={styles.photoActionText}>{photoAction}</Text>
+      <View style={styles.inputsContainer}>
+        <TextInput
+          placeholderTextColor={"#BDBDBD"}
+          style={styles.nameInput}
+          placeholder="Name..."
+        ></TextInput>
+        <TextInput
+          placeholderTextColor={"#BDBDBD"}
+          style={styles.locationInput}
+          placeholder="Location..."
+        ></TextInput>
+        <TouchableOpacity
+          disabled={isCreateBtnDisabled}
+          style={
+            isCreateBtnDisabled
+              ? styles.disabledCreatePostBtn
+              : styles.createPostBtn
+          }
+        >
+          <Text style={styles.createPostBtnText}>Create Post</Text>
         </TouchableOpacity>
-      </Camera>
-      <Text>Upload photo</Text>
-      <TextInput
-        style={{ borderBottomWidth: 1, borderColor: "grey", marginTop: 5 }}
-        placeholder="Name..."
-      ></TextInput>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingTop: 30,
-    // justifyContent: "center",
-    // alignItems: "center",
+    paddingHorizontal: 16,
+    backgroundColor: "white",
   },
   camera: {
     height: 300,
@@ -57,9 +108,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cameraBtn: {
-    borderWidth: 1,
-
-    padding: 15,
+    position: "relative",
+    zIndex: 100,
+    padding: 20,
     borderRadius: 50,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
@@ -67,8 +118,70 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-
-    borderWidth: 1,
-    borderColor: "grey",
+    width: "100%",
+    height: "100%",
+  },
+  makeNewPhoto: {
+    position: "absolute",
+    top: 115,
+    left: 140,
+    borderWidth: 0,
+    padding: 20,
+    borderRadius: 50,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+  },
+  photoActionText: {
+    fontFamily: "Roboto-Regulat",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#BDBDBD",
+    marginTop: 8,
+  },
+  inputsContainer: {
+    marginTop: 32,
+    paddingBottom: 100,
+  },
+  nameInput: {
+    fontFamily: "Roboto-Regulat",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 19,
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+    marginBottom: 16,
+    height: 50,
+  },
+  locationInput: {
+    fontFamily: "Roboto-Regulat",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 19,
+    borderBottomWidth: 1,
+    borderColor: "#BDBDBD",
+    height: 50,
+  },
+  createPostBtn: {
+    paddingHorizontal: "auto",
+    paddingVertical: 16,
+    backgroundColor: "#FF6C00",
+    alignItems: "center",
+    borderRadius: 25,
+    marginTop: 50,
+  },
+  disabledCreatePostBtn: {
+    paddingHorizontal: "auto",
+    paddingVertical: 16,
+    backgroundColor: "#F6F6F6",
+    alignItems: "center",
+    borderRadius: 25,
+    marginTop: 50,
+  },
+  createPostBtnText: {
+    ontFamily: "Roboto-Regulat",
+    fontWeight: "400",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#BDBDBD",
   },
 });
