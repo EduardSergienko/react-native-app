@@ -42,31 +42,30 @@ export default function CreatePostScreen() {
   return (
     <ScrollView showsVerticalScrollIndica style={styles.container}>
       <View style={{ borderWidth: 0, borderRadius: 8, overflow: "hidden" }}>
-        <Camera
-          ref={setcameraData}
-          type={CameraType.back}
-          style={styles.camera}
-        >
-          {photo && (
-            <View style={styles.photoContainer}>
-              <Image
-                style={{ width: "100%", height: "100%" }}
-                source={{ uri: photo }}
-              />
-              <TouchableOpacity
-                onPress={takeNewPhoto}
-                style={styles.makeNewPhoto}
-              >
-                <Ionicons name="md-camera-sharp" size={30} color="white" />
-              </TouchableOpacity>
-            </View>
-          )}
-          {!photo && (
+        {!photo ? (
+          <Camera
+            ref={setcameraData}
+            type={CameraType.back}
+            style={styles.camera}
+          >
             <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
               <Ionicons name="md-camera-sharp" size={30} color="white" />
             </TouchableOpacity>
-          )}
-        </Camera>
+          </Camera>
+        ) : (
+          <View style={styles.photoContainer}>
+            <Image
+              style={{ width: "100%", height: "100%" }}
+              source={{ uri: photo }}
+            />
+            <TouchableOpacity
+              onPress={takeNewPhoto}
+              style={styles.makeNewPhoto}
+            >
+              <Ionicons name="md-camera-sharp" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <Text style={styles.photoActionText}>{photoAction}</Text>
@@ -89,7 +88,14 @@ export default function CreatePostScreen() {
               : styles.createPostBtn
           }
         >
-          <Text style={styles.createPostBtnText}>Create Post</Text>
+          <Text
+            style={{
+              ...styles.createPostBtnText,
+              color: !isCreateBtnDisabled ? "white" : "#BDBDBD",
+            }}
+          >
+            Create Post
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -115,11 +121,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   photoContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
     width: "100%",
-    height: "100%",
+    height: 300,
   },
   makeNewPhoto: {
     position: "absolute",
