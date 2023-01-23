@@ -46,7 +46,6 @@ export default function CreatePostScreen({ navigation }) {
     setpostData((prevState) => ({ ...prevState, postName: text }));
   };
   const handlePostLocation = (text) => {
-    console.log(text);
     setpostData((prevState) => ({ ...prevState, postLocation: text }));
   };
   const crestePost = () => {

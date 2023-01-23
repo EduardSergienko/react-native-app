@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import Home from "./Screens/mainScreens/Home";
+import CommentsScreen from "./Screens/mainScreens/CommentsScreen";
 
 // import { useRotes } from "./routes/routes";
 export default function App() {
@@ -43,6 +44,11 @@ export default function App() {
           options={{ headerShown: false }}
           name="Home"
           component={Home}
+        />
+        <AuthStack.Screen
+          options={{ headerTitleAlign: "center" }}
+          name="Comments"
+          component={CommentsScreen}
         />
       </AuthStack.Navigator>
     </NavigationContainer>
