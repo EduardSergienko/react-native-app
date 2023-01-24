@@ -5,12 +5,12 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  TurboModuleRegistry,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 export default function PostsScreen({ navigation, route }) {
   const [postsData, setpostsData] = useState([]);
+
   useEffect(() => {
     if (route.params) {
       setpostsData((prevState) => [...prevState, route.params]);
@@ -53,7 +53,14 @@ export default function PostsScreen({ navigation, route }) {
                   flexDirection: "row",
                 }}
               >
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Map", {
+                      latitude: item.latitude,
+                      longitude: item.longitude,
+                    })
+                  }
+                >
                   <EvilIcons name="location" size={24} color="#BDBDBD" />
                 </TouchableOpacity>
                 <Text style={styles.postLocationText}>{item.postLocation}</Text>

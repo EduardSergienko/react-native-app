@@ -57,7 +57,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
       setTogleBtnText("Show");
     }
   };
-  // console.log("Credentials", ` ${email} + ${password}`);
 
   return (
     <TouchableWithoutFeedback onPress={hideKeyboard}>

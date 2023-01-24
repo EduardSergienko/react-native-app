@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, Text } from "react-native";
+import { View } from "react-native";
 const NavTab = createBottomTabNavigator();
 export default function Home({ navigation }) {
   return (
@@ -54,7 +55,7 @@ export default function Home({ navigation }) {
         component={CreatePostScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
+            <View
               style={{
                 backgroundColor: "#FF6C00",
                 textAlign: "center",
@@ -62,10 +63,9 @@ export default function Home({ navigation }) {
                 paddingVertical: 10,
                 borderRadius: 20,
               }}
-              name="md-add"
-              size={size}
-              color="white"
-            />
+            >
+              <Ionicons style={{}} name="md-add" size={size} color="white" />
+            </View>
           ),
           headerLeft: ({ focused, color, size }) => (
             <TouchableOpacity

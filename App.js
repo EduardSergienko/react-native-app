@@ -7,7 +7,7 @@ import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import Home from "./Screens/mainScreens/Home";
 import CommentsScreen from "./Screens/mainScreens/CommentsScreen";
-
+import MapScreen from "./Screens/mainScreens/MapScreen";
 // import { useRotes } from "./routes/routes";
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -49,6 +49,11 @@ export default function App() {
           options={{ headerTitleAlign: "center" }}
           name="Comments"
           component={CommentsScreen}
+        />
+        <AuthStack.Screen
+          options={{ headerTitleAlign: "center" }}
+          name="Map"
+          component={MapScreen}
         />
       </AuthStack.Navigator>
     </NavigationContainer>

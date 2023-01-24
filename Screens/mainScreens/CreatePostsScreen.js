@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { AutoFocus, Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -17,6 +18,7 @@ export default function CreatePostScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
+  const [location, setLocation] = useState(null);
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
@@ -24,16 +26,27 @@ export default function CreatePostScreen({ navigation }) {
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
+      let { status: locationStatus } =
+        await Location.requestForegroundPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
-      if (status === "granted") {
+      if (status && locationStatus === "granted") {
         setHasPermission("granted");
       }
     })();
   }, []);
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
+    const { coords } = await Location.getCurrentPositionAsync({});
+
+    setLocation(coords);
     setphoto(photo.uri);
-    setpostData((prevState) => ({ ...prevState, postPhoto: photo.uri }));
+    setpostData((prevState) => ({
+      ...prevState,
+      postPhoto: photo.uri,
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    }));
+
     setphotoAction("Edit photo");
     setisCreateBtnDisabled(false);
   };
