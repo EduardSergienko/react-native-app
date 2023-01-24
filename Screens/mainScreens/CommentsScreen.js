@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Platform,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
@@ -28,7 +29,12 @@ export default function CommentsScreen({ route }) {
   return (
     <View style={styles.container}>
       <Image style={styles.img} source={{ uri: photo }} />
-      <View style={{ ...styles.inputWrap, bottom: isShowKeyboard ? 230 : 20 }}>
+      <View
+        style={{
+          ...styles.inputWrap,
+          bottom: isShowKeyboard && Platform.OS === "ios" ? 230 : 20,
+        }}
+      >
         <TextInput
           onFocus={keyboardShowing}
           onSubmitEditing={hideKeyboard}

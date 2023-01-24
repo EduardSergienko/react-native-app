@@ -16,6 +16,7 @@ export default function App() {
     "Roboto-Medium": require("./fonts/Roboto-Medium.ttf"),
   });
   const AuthStack = createNativeStackNavigator();
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
