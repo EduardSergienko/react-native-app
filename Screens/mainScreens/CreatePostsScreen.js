@@ -7,13 +7,16 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { AutoFocus, Camera, CameraType } from "expo-camera";
+import { async, uuidv4 } from "@firebase/util";
+import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
+import { db } from "../../config";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 export default function CreatePostScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraData, setcameraData] = useState();
@@ -26,8 +29,7 @@ export default function CreatePostScreen({ navigation }) {
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      let { status: locationStatus } =
-        await Location.requestForegroundPermissionsAsync();
+      let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
       if (status && locationStatus === "granted") {
         setHasPermission("granted");
@@ -63,6 +65,7 @@ export default function CreatePostScreen({ navigation }) {
   };
   const crestePost = () => {
     if (photo) {
+      uploadPhotoToServer();
       navigation.navigate("Posts", postData);
       setpostData({});
       setphoto(null);
@@ -70,27 +73,32 @@ export default function CreatePostScreen({ navigation }) {
       setisCreateBtnDisabled(true);
     }
   };
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const id = uuidv4();
+
+    const storage = getStorage(db);
+    const storageRef = ref(storage, `postImage/${id}`);
+
+    const data = await uploadBytes(storageRef, file).then((snapshot) => {
+      console.log(snapshot);
+    });
+  };
 
   return (
     <ScrollView showsVerticalScrollIndica style={styles.container}>
       <View style={{ paddingBottom: 25 }}>
         <View style={{ borderWidth: 0, borderRadius: 8, overflow: "hidden" }}>
           {!photo ? (
-            <Camera
-              ref={setcameraData}
-              type={CameraType.back}
-              style={styles.camera}
-            >
+            <Camera ref={setcameraData} type={CameraType.back} style={styles.camera}>
               <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
                 <Ionicons name="md-camera-sharp" size={30} color="white" />
               </TouchableOpacity>
             </Camera>
           ) : (
             <View style={styles.photoContainer}>
-              <Image
-                style={{ width: "100%", height: "100%" }}
-                source={{ uri: photo }}
-              />
+              <Image style={{ width: "100%", height: "100%" }} source={{ uri: photo }} />
               {/* <TouchableOpacity
                 onPress={takeNewPhoto}
                 style={styles.makeNewPhoto}
@@ -127,11 +135,7 @@ export default function CreatePostScreen({ navigation }) {
           <TouchableOpacity
             disabled={isCreateBtnDisabled}
             onPress={crestePost}
-            style={
-              isCreateBtnDisabled
-                ? styles.disabledCreatePostBtn
-                : styles.createPostBtn
-            }
+            style={isCreateBtnDisabled ? styles.disabledCreatePostBtn : styles.createPostBtn}
           >
             <Text
               style={{
