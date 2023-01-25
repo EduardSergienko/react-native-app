@@ -6,16 +6,11 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
-import { authSlice } from "./authSlice";
-// export const registerUser = createAsyncThunk("auth/register", async ({ email, login, password }, { rejectWithValue }) => {
-//   try {
-//     const user = await createUserWithEmailAndPassword(getAuth(db), email, password);
-//     console.log(user);
-//   } catch (error) {
-//     return rejectWithValue();
-//   }
-// });
+
+import { authLogOut, updateUserProfile, authChangeState } from "./authSlice";
+import { async } from "@firebase/util";
 
 export const authSignUp =
   ({ email, login, password }) =>
@@ -29,7 +24,7 @@ export const authSignUp =
       });
       const { displayName, uid } = getAuth(db).currentUser;
 
-      dispatch(authSlice.actions.updateUserProfile({ userId: uid, userName: displayName }));
+      dispatch(updateUserProfile({ userId: uid, userName: displayName }));
     } catch (error) {}
   };
 
@@ -51,9 +46,16 @@ export const authStateChange = () => async (dispatch, getState) => {
           userId: user.uid,
           userName: user.displayName,
         };
-        dispatch(authSlice.actions.authStateChange({ stateChange: true }));
-        dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
+        dispatch(authChangeState({ stateChange: true }));
+        dispatch(updateUserProfile(userUpdateProfile));
       }
     });
+  } catch (error) {}
+};
+
+export const userLogOut = () => async (dispatch, getState) => {
+  try {
+    await signOut(getAuth(db));
+    dispatch(authLogOut());
   } catch (error) {}
 };

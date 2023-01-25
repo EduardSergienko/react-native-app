@@ -9,9 +9,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, Text } from "react-native";
 import { View } from "react-native";
-
+import { userLogOut } from "../../redux/auth/autnOperation";
+import { useDispatch } from "react-redux";
 const NavTab = createBottomTabNavigator();
 export default function Home({ navigation }) {
+  const dispatch = useDispatch();
   return (
     <NavTab.Navigator
       initialRouteName="Posts"
@@ -26,17 +28,19 @@ export default function Home({ navigation }) {
         name="Posts"
         component={PostsScreen}
         options={{
-          tabBarIcon: ({ focused, color, size }) => <AntDesign name="appstore-o" size={size} color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <AntDesign name="appstore-o" size={size} color={color} />
+          ),
           headerRight: ({ focused, color, size }) => (
-            <TouchableOpacity onPress={() => navigation.navigate("Login")} style={{ paddingRight: 20 }}>
+            <TouchableOpacity onPress={() => dispatch(userLogOut())} style={{ paddingRight: 20 }}>
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
-          headerLeft: ({ focused, color, size }) => (
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 20 }}>
-              <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          ),
+          // headerLeft: ({ focused, color, size }) => (
+          //   <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 20 }}>
+          //     <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
+          //   </TouchableOpacity>
+          // ),
         }}
       />
       <NavTab.Screen
@@ -57,7 +61,10 @@ export default function Home({ navigation }) {
             </View>
           ),
           headerLeft: ({ focused, color, size }) => (
-            <TouchableOpacity onPress={() => navigation.navigate("Posts")} style={{ paddingLeft: 20 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Posts")}
+              style={{ paddingLeft: 20 }}
+            >
               <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
@@ -68,14 +75,19 @@ export default function Home({ navigation }) {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ focused, color, size }) => <Feather name="user" size={size} color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Feather name="user" size={size} color={color} />
+          ),
           headerRight: ({ focused, color, size }) => (
-            <TouchableOpacity onPress={() => navigation.navigate("Registration")} style={{ paddingRight: 20 }}>
+            <TouchableOpacity onPress={() => dispatch(userLogOut())} style={{ paddingRight: 20 }}>
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
           headerLeft: ({ focused, color, size }) => (
-            <TouchableOpacity onPress={() => navigation.navigate("Create Post")} style={{ paddingLeft: 20 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Create Post")}
+              style={{ paddingLeft: 20 }}
+            >
               <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),

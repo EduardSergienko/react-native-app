@@ -31,9 +31,12 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
 
   const dispatch = useDispatch();
 
-  const handleLoginText = (text) => setregisterFormData((prevState) => ({ ...prevState, login: text }));
-  const handleEmailText = (text) => setregisterFormData((prevState) => ({ ...prevState, email: text }));
-  const handlePasswordText = (text) => setregisterFormData((prevState) => ({ ...prevState, password: text }));
+  const handleLoginText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, login: text }));
+  const handleEmailText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, email: text }));
+  const handlePasswordText = (text) =>
+    setregisterFormData((prevState) => ({ ...prevState, password: text }));
 
   const hideKeyboard = () => {
     setisShowKeyboard(false);
@@ -48,7 +51,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     setformData(registerFormData);
     dispatch(authSignUp(registerFormData));
     setregisterFormData(initialRegisterState);
-    // navigation.navigate("Home");
+
     Keyboard.dismiss();
   };
 
@@ -70,7 +73,10 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
         style={styles.container}
         // onLayout={onLayoutRootView}
       >
-        <ImageBackground style={styles.bgrImg} source={require("../assets/img/Photo_BG.jpg")}></ImageBackground>
+        <ImageBackground
+          style={styles.bgrImg}
+          source={require("../assets/img/Photo_BG.jpg")}
+        ></ImageBackground>
         <View
           style={{
             ...styles.wrap,
@@ -105,10 +111,18 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               value={registerFormData.password}
               onChangeText={handlePasswordText}
             />
-            <TouchableOpacity onPress={(hideKeyboard, onFormSubmit)} activeOpacity={0.7} style={styles.regBtn}>
+            <TouchableOpacity
+              onPress={(hideKeyboard, onFormSubmit)}
+              activeOpacity={0.7}
+              style={styles.regBtn}
+            >
               <Text style={styles.btnTitle}>Register</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShowPassword} activeOpacity={0.7} style={styles.passwordVisibleTogle}>
+            <TouchableOpacity
+              onPress={handleShowPassword}
+              activeOpacity={0.7}
+              style={styles.passwordVisibleTogle}
+            >
               <Text style={styles.passwordVisibleTogleText}>{togleBtnText}</Text>
             </TouchableOpacity>
           </View>
