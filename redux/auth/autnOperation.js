@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { authSlice } from "./authSlice";
 // export const registerUser = createAsyncThunk("auth/register", async ({ email, login, password }, { rejectWithValue }) => {
@@ -42,3 +43,17 @@ export const authSignIn =
       console.log(error.message);
     }
   };
+export const authStateChange = () => async (dispatch, getState) => {
+  try {
+    await onAuthStateChanged(getAuth(db), (user) => {
+      if (user) {
+        const userUpdateProfile = {
+          userId: user.uid,
+          userName: user.displayName,
+        };
+        dispatch(authSlice.actions.authStateChange({ stateChange: true }));
+        dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
+      }
+    });
+  } catch (error) {}
+};
