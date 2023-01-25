@@ -8,6 +8,8 @@ import LoginScreen from "./Screens/LoginScreen";
 import Home from "./Screens/mainScreens/Home";
 import CommentsScreen from "./Screens/mainScreens/CommentsScreen";
 import MapScreen from "./Screens/mainScreens/MapScreen";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 // import { useRotes } from "./routes/routes";
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -29,34 +31,16 @@ export default function App() {
 
   // const routes = useRotes(true);
   return (
-    <NavigationContainer>
-      <AuthStack.Navigator>
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Registration"
-          component={RegistrationScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerShown: false }}
-          name="Home"
-          component={Home}
-        />
-        <AuthStack.Screen
-          options={{ headerTitleAlign: "center" }}
-          name="Comments"
-          component={CommentsScreen}
-        />
-        <AuthStack.Screen
-          options={{ headerTitleAlign: "center" }}
-          name="Map"
-          component={MapScreen}
-        />
-      </AuthStack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <AuthStack.Navigator>
+          <AuthStack.Screen options={{ headerShown: false }} name="Registration" component={RegistrationScreen} />
+          <AuthStack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+          <AuthStack.Screen options={{ headerShown: false }} name="Home" component={Home} />
+          <AuthStack.Screen options={{ headerTitleAlign: "center" }} name="Comments" component={CommentsScreen} />
+          <AuthStack.Screen options={{ headerTitleAlign: "center" }} name="Map" component={MapScreen} />
+        </AuthStack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }

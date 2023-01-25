@@ -12,25 +12,25 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-
+import { useDispatch } from "react-redux";
+import { authSignIn } from "../redux/auth/autnOperation";
 export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const initialRegisterState = {
     email: "",
     password: "",
   };
 
-  const [registerFormData, setregisterFormData] =
-    useState(initialRegisterState);
+  const [loginFormData, setloginFormData] = useState(initialRegisterState);
   const [formData, setformData] = useState({});
   const { password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
 
-  const handleEmailText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, email: text }));
-  const handlePasswordText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, password: text }));
+  const dispatch = useDispatch();
+
+  const handleEmailText = (text) => setloginFormData((prevState) => ({ ...prevState, email: text }));
+  const handlePasswordText = (text) => setloginFormData((prevState) => ({ ...prevState, password: text }));
 
   const hideKeyboard = () => {
     setisShowKeyboard(false);
@@ -42,8 +42,9 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   };
 
   const onFormSubmit = () => {
-    setformData(registerFormData);
-    setregisterFormData(initialRegisterState);
+    setformData(loginFormData);
+    dispatch(authSignIn(loginFormData));
+    setloginFormData(initialRegisterState);
     navigation.navigate("Home");
     Keyboard.dismiss();
   };
@@ -65,10 +66,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
         style={styles.container}
         // onLayout={onLayoutRootView}
       >
-        <ImageBackground
-          style={styles.bgrImg}
-          source={require("../assets/img/Photo_BG.jpg")}
-        ></ImageBackground>
+        <ImageBackground style={styles.bgrImg} source={require("../assets/img/Photo_BG.jpg")}></ImageBackground>
         <View
           style={{
             ...styles.wrap,
@@ -82,7 +80,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               placeholder="Email"
               onFocus={keyboardShowing}
               onSubmitEditing={hideKeyboard}
-              value={registerFormData.email}
+              value={loginFormData.email}
               onChangeText={handleEmailText}
             />
             <TextInput
@@ -91,24 +89,14 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               onFocus={keyboardShowing}
               onSubmitEditing={hideKeyboard}
               secureTextEntry={isPassworHiden}
-              value={registerFormData.password}
+              value={loginFormData.password}
               onChangeText={handlePasswordText}
             />
-            <TouchableOpacity
-              onPress={(hideKeyboard, onFormSubmit)}
-              activeOpacity={0.7}
-              style={styles.regBtn}
-            >
+            <TouchableOpacity onPress={(hideKeyboard, onFormSubmit)} activeOpacity={0.7} style={styles.regBtn}>
               <Text style={styles.btnTitle}>Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleShowPassword}
-              activeOpacity={0.7}
-              style={styles.passwordVisibleTogle}
-            >
-              <Text style={styles.passwordVisibleTogleText}>
-                {togleBtnText}
-              </Text>
+            <TouchableOpacity onPress={handleShowPassword} activeOpacity={0.7} style={styles.passwordVisibleTogle}>
+              <Text style={styles.passwordVisibleTogleText}>{togleBtnText}</Text>
             </TouchableOpacity>
           </View>
 

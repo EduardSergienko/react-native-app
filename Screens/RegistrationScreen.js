@@ -13,7 +13,8 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-
+import { authSignUp } from "../redux/auth/autnOperation";
+import { useDispatch } from "react-redux";
 export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const initialRegisterState = {
     login: "",
@@ -21,20 +22,18 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     password: "",
   };
 
-  const [registerFormData, setregisterFormData] =
-    useState(initialRegisterState);
+  const [registerFormData, setregisterFormData] = useState(initialRegisterState);
   const [formData, setformData] = useState({});
   const { login, password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
 
-  const handleLoginText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, login: text }));
-  const handleEmailText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, email: text }));
-  const handlePasswordText = (text) =>
-    setregisterFormData((prevState) => ({ ...prevState, password: text }));
+  const dispatch = useDispatch();
+
+  const handleLoginText = (text) => setregisterFormData((prevState) => ({ ...prevState, login: text }));
+  const handleEmailText = (text) => setregisterFormData((prevState) => ({ ...prevState, email: text }));
+  const handlePasswordText = (text) => setregisterFormData((prevState) => ({ ...prevState, password: text }));
 
   const hideKeyboard = () => {
     setisShowKeyboard(false);
@@ -47,8 +46,9 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
 
   const onFormSubmit = () => {
     setformData(registerFormData);
+    dispatch(authSignUp(registerFormData));
     setregisterFormData(initialRegisterState);
-    navigation.navigate("Home");
+    // navigation.navigate("Home");
     Keyboard.dismiss();
   };
 
@@ -70,10 +70,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
         style={styles.container}
         // onLayout={onLayoutRootView}
       >
-        <ImageBackground
-          style={styles.bgrImg}
-          source={require("../assets/img/Photo_BG.jpg")}
-        ></ImageBackground>
+        <ImageBackground style={styles.bgrImg} source={require("../assets/img/Photo_BG.jpg")}></ImageBackground>
         <View
           style={{
             ...styles.wrap,
@@ -108,21 +105,11 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               value={registerFormData.password}
               onChangeText={handlePasswordText}
             />
-            <TouchableOpacity
-              onPress={(hideKeyboard, onFormSubmit)}
-              activeOpacity={0.7}
-              style={styles.regBtn}
-            >
+            <TouchableOpacity onPress={(hideKeyboard, onFormSubmit)} activeOpacity={0.7} style={styles.regBtn}>
               <Text style={styles.btnTitle}>Register</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleShowPassword}
-              activeOpacity={0.7}
-              style={styles.passwordVisibleTogle}
-            >
-              <Text style={styles.passwordVisibleTogleText}>
-                {togleBtnText}
-              </Text>
+            <TouchableOpacity onPress={handleShowPassword} activeOpacity={0.7} style={styles.passwordVisibleTogle}>
+              <Text style={styles.passwordVisibleTogleText}>{togleBtnText}</Text>
             </TouchableOpacity>
           </View>
           <Text
@@ -134,10 +121,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
             Already have an account? Sign in
           </Text>
           <View style={styles.avatarContainer}>
-            <Image
-              style={styles.addAvatar}
-              source={require("../img/add.png")}
-            />
+            <Image style={styles.addAvatar} source={require("../img/add.png")} />
           </View>
         </View>
         <StatusBar style="auto" />
