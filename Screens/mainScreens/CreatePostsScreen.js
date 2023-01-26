@@ -7,7 +7,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import { async, uuidv4 } from "@firebase/util";
+import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
@@ -15,8 +15,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { db } from "../../config";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { store } from "../../config";
+
 export default function CreatePostScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraData, setcameraData] = useState();
@@ -25,6 +29,8 @@ export default function CreatePostScreen({ navigation }) {
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
+
+  const { userId, userName } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -64,13 +70,32 @@ export default function CreatePostScreen({ navigation }) {
     setpostData((prevState) => ({ ...prevState, postLocation: text }));
   };
   const crestePost = () => {
+    uploadPostToServer();
     if (photo) {
-      uploadPhotoToServer();
       navigation.navigate("Posts", postData);
       setpostData({});
       setphoto(null);
       setphotoAction("Load photo");
       setisCreateBtnDisabled(true);
+    }
+  };
+  const uploadPostToServer = async () => {
+    try {
+      const photo = await uploadPhotoToServer();
+      console.log(photo);
+
+      const docRef = await addDoc(collection(store, "posts"), {
+        userId,
+        userName,
+        photo,
+        location,
+        postMessage: postData.postName || "",
+        postLocation: postData.postLocation || "",
+      });
+
+      console.log(docRef);
+    } catch (error) {
+      console.log(error);
     }
   };
   const uploadPhotoToServer = async () => {
@@ -81,9 +106,10 @@ export default function CreatePostScreen({ navigation }) {
     const storage = getStorage(db);
     const storageRef = ref(storage, `postImage/${id}`);
 
-    const data = await uploadBytes(storageRef, file).then((snapshot) => {
-      console.log(snapshot);
-    });
+    const data = await uploadBytes(storageRef, file);
+
+    const getCurrentPhoto = await getDownloadURL(ref(storage, `postImage/${id}`));
+    return getCurrentPhoto;
   };
 
   return (
@@ -99,12 +125,6 @@ export default function CreatePostScreen({ navigation }) {
           ) : (
             <View style={styles.photoContainer}>
               <Image style={{ width: "100%", height: "100%" }} source={{ uri: photo }} />
-              {/* <TouchableOpacity
-                onPress={takeNewPhoto}
-                style={styles.makeNewPhoto}
-              >
-                <Ionicons name="md-camera-sharp" size={30} color="white" />
-              </TouchableOpacity> */}
             </View>
           )}
         </View>
@@ -182,15 +202,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
   },
-  // makeNewPhoto: {
-  //   position: "absolute",
-  //   top: 115,
-  //   left: 140,
-  //   borderWidth: 0,
-  //   padding: 20,
-  //   borderRadius: 50,
-  //   backgroundColor: "rgba(255, 255, 255, 0.3)",
-  // },
+
   photoActionText: {
     fontFamily: "Roboto-Regulat",
     fontWeight: "400",
