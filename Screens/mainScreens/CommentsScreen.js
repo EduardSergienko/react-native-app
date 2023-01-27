@@ -12,9 +12,12 @@ import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 export default function CommentsScreen({ route }) {
   const [photo, setphoto] = useState(null);
+  const [comment, setComment] = useState("");
+  console.log(comment);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   useEffect(() => {
     if (route.params) {
+      console.log(route.params);
       setphoto(route.params.photo);
     }
   }, []);
@@ -26,6 +29,10 @@ export default function CommentsScreen({ route }) {
   const keyboardShowing = () => {
     setisShowKeyboard(true);
   };
+  const handleComment = (text) => {
+    setComment(text);
+  };
+
   return (
     <View style={styles.container}>
       <Image style={styles.img} source={{ uri: photo }} />
@@ -38,6 +45,8 @@ export default function CommentsScreen({ route }) {
         <TextInput
           onFocus={keyboardShowing}
           onSubmitEditing={hideKeyboard}
+          onChangeText={handleComment}
+          value={comment}
           style={styles.input}
           placeholder="Add comment..."
         ></TextInput>

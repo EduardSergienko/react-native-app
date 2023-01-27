@@ -72,7 +72,7 @@ export default function CreatePostScreen({ navigation }) {
   const crestePost = () => {
     uploadPostToServer();
     if (photo) {
-      navigation.navigate("Posts", postData);
+      navigation.navigate("Posts");
       setpostData({});
       setphoto(null);
       setphotoAction("Load photo");
@@ -82,7 +82,6 @@ export default function CreatePostScreen({ navigation }) {
   const uploadPostToServer = async () => {
     try {
       const photo = await uploadPhotoToServer();
-      console.log(photo);
 
       const docRef = await addDoc(collection(store, "posts"), {
         userId,
@@ -92,8 +91,6 @@ export default function CreatePostScreen({ navigation }) {
         postMessage: postData.postName || "",
         postLocation: postData.postLocation || "",
       });
-
-      console.log(docRef);
     } catch (error) {
       console.log(error);
     }
