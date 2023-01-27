@@ -28,20 +28,17 @@ export default function CommentsScreen({ route }) {
   const createComment = async () => {
     const washingtonRef = await doc(store, "posts", `${id}`);
     const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
-    const timeOptions = { formatMatcher: "hour" };
-    const date = new Date().toLocaleDateString("en-GB", dateOptions);
-    const time = new Date().toLocaleTimeString("en-GB").slice(0, 6);
-    console.log(date);
+    const commentDate = [];
+    const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
+    const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 6));
+    console.log(commentDate);
     const docRef = await addDoc(collection(washingtonRef, "comments"), {
       comment,
-      date: date + " " + "|" + " " + time,
+      date: commentDate.join(" | "),
     });
     setisShowKeyboard(false);
     Keyboard.dismiss();
     setComment("");
-    // await updateDoc(washingtonRef, {
-    //   comments: { comment },
-    // });
   };
 
   const hideKeyboard = () => {
