@@ -80,42 +80,42 @@ export default function CommentsScreen({ route }) {
   };
 
   return (
-    // <TouchableWithoutFeedback onPress={hideKeyboard}>
-    <View style={styles.container}>
-      <Image style={styles.img} source={{ uri: photo }} />
-      <FlatList
-        style={styles.commentList}
-        data={allComments}
-        renderItem={({ item }) => (
-          <View style={styles.commentContainer}>
-            <View style={styles.userAvatar}></View>
-            <View style={styles.commentWrap}>
-              <Text style={styles.comment}>{item.comment}</Text>
-              <Text style={styles.commentDate}>{item.date}</Text>
+    <TouchableWithoutFeedback onPress={hideKeyboard}>
+      <View onStartShouldSetResponder={() => true} style={styles.container}>
+        <Image style={styles.img} source={{ uri: photo }} />
+        <FlatList
+          style={styles.commentList}
+          data={allComments}
+          renderItem={({ item }) => (
+            <View onStartShouldSetResponder={() => true} style={styles.commentContainer}>
+              <View style={styles.userAvatar}></View>
+              <View style={styles.commentWrap}>
+                <Text style={styles.comment}>{item.comment}</Text>
+                <Text style={styles.commentDate}>{item.date}</Text>
+              </View>
             </View>
-          </View>
-        )}
-      ></FlatList>
-      <View
-        style={{
-          ...styles.inputWrap,
-          marginBottom: isShowKeyboard && Platform.OS === "ios" ? 350 : 20,
-        }}
-      >
-        <TextInput
-          onFocus={keyboardShowing}
-          onSubmitEditing={hideKeyboard}
-          onChangeText={handleComment}
-          value={comment}
-          style={styles.input}
-          placeholder="Add comment..."
-        ></TextInput>
-        <TouchableOpacity onPress={createComment} style={styles.addCommentBtn}>
-          <AntDesign name="arrowup" size={24} color="white" />
-        </TouchableOpacity>
+          )}
+        ></FlatList>
+        <View
+          style={{
+            ...styles.inputWrap,
+            marginBottom: isShowKeyboard && Platform.OS === "ios" ? 350 : 20,
+          }}
+        >
+          <TextInput
+            onFocus={keyboardShowing}
+            onSubmitEditing={hideKeyboard}
+            onChangeText={handleComment}
+            value={comment}
+            style={styles.input}
+            placeholder="Add comment..."
+          ></TextInput>
+          <TouchableOpacity onPress={createComment} style={styles.addCommentBtn}>
+            <AntDesign name="arrowup" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-    // </TouchableWithoutFeedback>
+    </TouchableWithoutFeedback>
   );
 }
 
