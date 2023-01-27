@@ -6,39 +6,65 @@ import {
   TouchableOpacity,
   Keyboard,
   Platform,
+  FlatList,
+  Text,
+  TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { doc, collection, addDoc } from "firebase/firestore";
+import { doc, collection, addDoc, query, onSnapshot } from "firebase/firestore";
 import { store } from "../../config";
 
 export default function CommentsScreen({ route }) {
   const { id } = route.params;
-  console.log(id);
+
   const [photo, setphoto] = useState(null);
   const [comment, setComment] = useState("");
-  console.log(comment);
+  const [allComments, setallComments] = useState(null);
+  console.log(allComments);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   useEffect(() => {
     if (route.params) {
-      console.log(route.params);
       setphoto(route.params.photo);
+      getAllComments();
     }
   }, []);
   const createComment = async () => {
-    const washingtonRef = await doc(store, "posts", `${id}`);
-    const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
-    const commentDate = [];
-    const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
-    const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 6));
-    console.log(commentDate);
-    const docRef = await addDoc(collection(washingtonRef, "comments"), {
-      comment,
-      date: commentDate.join(" | "),
-    });
-    setisShowKeyboard(false);
-    Keyboard.dismiss();
-    setComment("");
+    if (comment !== "") {
+      try {
+        const postsRef = await doc(store, "posts", `${id}`);
+        const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
+        const commentDate = [];
+        const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
+        const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 5));
+        console.log(commentDate);
+        const docRef = await addDoc(collection(postsRef, "comments"), {
+          comment,
+          date: commentDate.join(" | "),
+        });
+        setisShowKeyboard(false);
+        Keyboard.dismiss();
+        setComment("");
+      } catch (error) {}
+    } else {
+      Alert.alert("Please, add some comment...");
+    }
+  };
+  const getAllComments = async () => {
+    try {
+      const postsCollection = query(collection(store, "posts", `${id}`, "comments"));
+      const unsubscribe = onSnapshot(postsCollection, (querySnapshot) => {
+        console.log(querySnapshot);
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({ ...doc.data(), id: doc.id });
+        });
+        setallComments(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const hideKeyboard = () => {
@@ -54,12 +80,26 @@ export default function CommentsScreen({ route }) {
   };
 
   return (
+    // <TouchableWithoutFeedback onPress={hideKeyboard}>
     <View style={styles.container}>
       <Image style={styles.img} source={{ uri: photo }} />
+      <FlatList
+        style={styles.commentList}
+        data={allComments}
+        renderItem={({ item }) => (
+          <View style={styles.commentContainer}>
+            <View style={styles.userAvatar}></View>
+            <View style={styles.commentWrap}>
+              <Text style={styles.comment}>{item.comment}</Text>
+              <Text style={styles.commentDate}>{item.date}</Text>
+            </View>
+          </View>
+        )}
+      ></FlatList>
       <View
         style={{
           ...styles.inputWrap,
-          bottom: isShowKeyboard && Platform.OS === "ios" ? 230 : 20,
+          marginBottom: isShowKeyboard && Platform.OS === "ios" ? 350 : 20,
         }}
       >
         <TextInput
@@ -75,6 +115,7 @@ export default function CommentsScreen({ route }) {
         </TouchableOpacity>
       </View>
     </View>
+    // </TouchableWithoutFeedback>
   );
 }
 
@@ -91,8 +132,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   inputWrap: {
-    position: "absolute",
-    // bottom: 20,
+    // position: "absolute",
+    // bottom:  20,
+    marginBottom: 20,
     width: 343,
   },
   input: {
@@ -116,5 +158,43 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#FF6C00",
     borderWidth: 0,
+  },
+  commentList: {
+    paddingTop: 25,
+  },
+  commentContainer: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  commentWrap: {
+    width: 299,
+    marginBottom: 25,
+    backgroundColor: "rgba(0, 0, 0, 0.03)",
+    padding: 16,
+    borderBottomRightRadius: 10,
+    borderBottomStartRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  commentDate: {
+    fontFamily: "Roboto-Regulat",
+    textAlign: "right",
+    fontSize: 10,
+    lineHeight: 12,
+    color: "#BDBDBD",
+  },
+  comment: {
+    fontFamily: "Roboto-Regulat",
+    fontWeight: "400",
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#212121",
+    marginBottom: 10,
+  },
+  userAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 50,
+    backgroundColor: "grey",
+    marginRight: 15,
   },
 });
