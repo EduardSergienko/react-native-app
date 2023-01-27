@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   StyleSheet,
   Image,
   TextInput,
@@ -10,7 +9,12 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
+import { doc, collection, addDoc } from "firebase/firestore";
+import { store } from "../../config";
+
 export default function CommentsScreen({ route }) {
+  const { id } = route.params;
+  console.log(id);
   const [photo, setphoto] = useState(null);
   const [comment, setComment] = useState("");
   console.log(comment);
@@ -21,6 +25,25 @@ export default function CommentsScreen({ route }) {
       setphoto(route.params.photo);
     }
   }, []);
+  const createComment = async () => {
+    const washingtonRef = await doc(store, "posts", `${id}`);
+    const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
+    const timeOptions = { formatMatcher: "hour" };
+    const date = new Date().toLocaleDateString("en-GB", dateOptions);
+    const time = new Date().toLocaleTimeString("en-GB").slice(0, 6);
+    console.log(date);
+    const docRef = await addDoc(collection(washingtonRef, "comments"), {
+      comment,
+      date: date + " " + "|" + " " + time,
+    });
+    setisShowKeyboard(false);
+    Keyboard.dismiss();
+    setComment("");
+    // await updateDoc(washingtonRef, {
+    //   comments: { comment },
+    // });
+  };
+
   const hideKeyboard = () => {
     setisShowKeyboard(false);
     Keyboard.dismiss();
@@ -50,7 +73,7 @@ export default function CommentsScreen({ route }) {
           style={styles.input}
           placeholder="Add comment..."
         ></TextInput>
-        <TouchableOpacity style={styles.addCommentBtn}>
+        <TouchableOpacity onPress={createComment} style={styles.addCommentBtn}>
           <AntDesign name="arrowup" size={24} color="white" />
         </TouchableOpacity>
       </View>
