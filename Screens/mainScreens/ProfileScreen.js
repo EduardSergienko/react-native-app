@@ -7,7 +7,7 @@ import { EvilIcons } from "@expo/vector-icons";
 
 export default function ProfileScreen({ navigation }) {
   const [userPostsData, setuserPostsData] = useState(null);
-  console.log(userPostsData);
+
   const { userId } = useSelector((state) => state.auth);
   const getCurrentUserPosts = async () => {
     try {

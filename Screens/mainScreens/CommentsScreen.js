@@ -22,7 +22,7 @@ export default function CommentsScreen({ route }) {
   const [photo, setphoto] = useState(null);
   const [comment, setComment] = useState("");
   const [allComments, setallComments] = useState(null);
-  console.log(allComments);
+
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   useEffect(() => {
     if (route.params) {
@@ -38,7 +38,7 @@ export default function CommentsScreen({ route }) {
         const commentDate = [];
         const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
         const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 5));
-        console.log(commentDate);
+
         const docRef = await addDoc(collection(postsRef, "comments"), {
           comment,
           date: commentDate.join(" | "),
@@ -55,7 +55,6 @@ export default function CommentsScreen({ route }) {
     try {
       const postsCollection = query(collection(store, "posts", `${id}`, "comments"));
       onSnapshot(postsCollection, (querySnapshot) => {
-        console.log(querySnapshot);
         const data = [];
         querySnapshot.forEach((doc) => {
           data.push({ ...doc.data(), id: doc.id });

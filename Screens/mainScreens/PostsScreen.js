@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 export default function PostsScreen({ navigation }) {
   const [postsData, setpostsData] = useState(null);
-  console.log(postsData);
+
   useEffect(() => {
     const getPosts = async () => {
       try {

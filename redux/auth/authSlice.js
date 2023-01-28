@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const state = {
   userId: null,
   userName: null,
+  userAvatar: "",
   stateChange: false,
 };
 

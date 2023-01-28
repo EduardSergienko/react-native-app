@@ -11,10 +11,15 @@ import {
   ImageBackground,
   Dimensions,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
-import { authSignUp } from "../redux/auth/autnOperation";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { authSignUp } from "../redux/auth/autnOperation";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db } from "../config";
+import { uuidv4 } from "@firebase/util";
+
 export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const initialRegisterState = {
     login: "",
@@ -28,8 +33,19 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [dbUserAvatar, setDbUserAvatar] = useState(null);
+  const [galleryPermition, setgalleryPermition] = useState(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (userAvatar) {
+      uploadUserAvatarToDb();
+    } else {
+      return;
+    }
+  }, [userAvatar]);
 
   const handleLoginText = (text) =>
     setregisterFormData((prevState) => ({ ...prevState, login: text }));
@@ -64,7 +80,32 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
       setTogleBtnText("Show");
     }
   };
-  // console.log("Credentials", `${login} + ${email} + ${password}`);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result.assets[0].uri);
+
+    if (!result.canceled) {
+      await setUserAvatar(result.assets[0].uri);
+    }
+  };
+  const uploadUserAvatarToDb = async () => {
+    const response = await fetch(userAvatar);
+    const file = await response.blob();
+    const id = uuidv4();
+    const storage = getStorage(db);
+    const storageRef = ref(storage, `usersAvatars/${id}`);
+    const data = await uploadBytes(storageRef, file);
+    const getCurrentPhoto = await getDownloadURL(ref(storage, `usersAvatars/${id}`));
+    setDbUserAvatar(getCurrentPhoto);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={hideKeyboard}>
@@ -135,7 +176,13 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
             Already have an account? Sign in
           </Text>
           <View style={styles.avatarContainer}>
-            <Image style={styles.addAvatar} source={require("../img/add.png")} />
+            <Image
+              style={{ width: 120, height: 120, borderRadius: 16 }}
+              source={{ uri: dbUserAvatar }}
+            />
+            <TouchableOpacity onPress={pickImage} style={styles.addAvatar}>
+              <Image style={styles.addAvatar} source={require("../img/add.png")} />
+            </TouchableOpacity>
           </View>
         </View>
         <StatusBar style="auto" />
