@@ -54,7 +54,7 @@ export default function CommentsScreen({ route }) {
   const getAllComments = async () => {
     try {
       const postsCollection = query(collection(store, "posts", `${id}`, "comments"));
-      const unsubscribe = onSnapshot(postsCollection, (querySnapshot) => {
+      onSnapshot(postsCollection, (querySnapshot) => {
         console.log(querySnapshot);
         const data = [];
         querySnapshot.forEach((doc) => {
