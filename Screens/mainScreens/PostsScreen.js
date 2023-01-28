@@ -3,9 +3,11 @@ import { query, onSnapshot, collection } from "firebase/firestore";
 import { store } from "../../config";
 import { useState, useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 export default function PostsScreen({ navigation }) {
   const [postsData, setpostsData] = useState(null);
-
+  const userState = useSelector((state) => state.auth);
+  console.log(userState);
   useEffect(() => {
     const getPosts = async () => {
       try {
@@ -29,6 +31,9 @@ export default function PostsScreen({ navigation }) {
   };
   return (
     <View style={styles.container}>
+      <View>
+        <Image style={{ width: 120, height: 120 }} source={{ uri: userState.userAvatar }} />
+      </View>
       <FlatList
         style={styles.postsList}
         data={postsData}

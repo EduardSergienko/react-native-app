@@ -13,7 +13,7 @@ import { authLogOut, updateUserProfile, authChangeState } from "./authSlice";
 import { async } from "@firebase/util";
 
 export const authSignUp =
-  ({ email, login, password }) =>
+  ({ email, login, password, userAvatar }) =>
   async (dispatch, getState) => {
     try {
       await createUserWithEmailAndPassword(getAuth(db), email, password);
@@ -21,10 +21,12 @@ export const authSignUp =
 
       await updateProfile(user, {
         displayName: login,
+        photoURL: userAvatar,
       });
-      const { displayName, uid } = getAuth(db).currentUser;
 
-      dispatch(updateUserProfile({ userId: uid, userName: displayName }));
+      const { displayName, uid, photoURL } = getAuth(db).currentUser;
+      console.log(photoURL);
+      dispatch(updateUserProfile({ userId: uid, userName: displayName, userAvatar: photoURL }));
     } catch (error) {}
   };
 
@@ -33,7 +35,6 @@ export const authSignIn =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(getAuth(db), email, password);
-      console.log(user);
     } catch (error) {
       console.log(error.message);
     }
@@ -45,6 +46,7 @@ export const authStateChange = () => async (dispatch, getState) => {
         const userUpdateProfile = {
           userId: user.uid,
           userName: user.displayName,
+          userAvatar: user.photoURL,
         };
         dispatch(authChangeState({ stateChange: true }));
         dispatch(updateUserProfile(userUpdateProfile));

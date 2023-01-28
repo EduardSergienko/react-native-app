@@ -104,7 +104,8 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     const storageRef = ref(storage, `usersAvatars/${id}`);
     const data = await uploadBytes(storageRef, file);
     const getCurrentPhoto = await getDownloadURL(ref(storage, `usersAvatars/${id}`));
-    setDbUserAvatar(getCurrentPhoto);
+    setregisterFormData((prevState) => ({ ...prevState, userAvatar: getCurrentPhoto }));
+    // setDbUserAvatar(getCurrentPhoto);
   };
 
   return (
@@ -178,7 +179,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
           <View style={styles.avatarContainer}>
             <Image
               style={{ width: 120, height: 120, borderRadius: 16 }}
-              source={{ uri: dbUserAvatar }}
+              source={{ uri: registerFormData.userAvatar }}
             />
             <TouchableOpacity onPress={pickImage} style={styles.addAvatar}>
               <Image style={styles.addAvatar} source={require("../img/add.png")} />
