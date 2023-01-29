@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   userInfo: {
-    // flex: 1,
     flexDirection: "row",
     alignItems: "center",
     width: 343,
     marginLeft: "auto",
     marginRight: "auto",
-    paddingBottom: 15,
+
+    paddingVertical: 15,
   },
   userInfoAvatar: {
     width: 60,
