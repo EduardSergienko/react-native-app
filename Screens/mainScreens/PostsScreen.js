@@ -31,8 +31,15 @@ export default function PostsScreen({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <View>
-        <Image style={{ width: 120, height: 120 }} source={{ uri: userState.userAvatar }} />
+      <View style={styles.userInfo}>
+        <Image
+          style={styles.userInfoAvatar}
+          source={{ uri: userState.userAvatar !== "" && userState.userAvatar }}
+        />
+        <View>
+          <Text style={styles.userName}>{userState.userName}</Text>
+          <Text style={styles.userEmail}>{userState.userEmail}</Text>
+        </View>
       </View>
       <FlatList
         style={styles.postsList}
@@ -88,8 +95,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     height: "100%",
+    // paddingTop: 15,
   },
-
+  postsList: {
+    paddingTop: 15,
+  },
   postItem: {
     marginBottom: 34,
     borderRadius: 15,
@@ -110,5 +120,35 @@ const styles = StyleSheet.create({
     color: "#212121",
     textDecorationLine: "underline",
     marginLeft: 5,
+  },
+  userInfo: {
+    // flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    width: 343,
+    marginLeft: "auto",
+    marginRight: "auto",
+    paddingBottom: 15,
+  },
+  userInfoAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  userName: {
+    fontFamily: "Roboto-Regulat",
+    fontWeight: "700",
+    fontSize: 13,
+    lineHeight: 15,
+    color: "#212121",
+  },
+  userEmail: {
+    fontFamily: "Roboto-Regulat",
+
+    fontWeight: "400",
+    fontSize: 11,
+    lineHeight: 13,
+    color: "rgba(33, 33, 33, 0.8)",
   },
 });
