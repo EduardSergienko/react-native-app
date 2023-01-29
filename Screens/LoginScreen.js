@@ -87,6 +87,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               onSubmitEditing={hideKeyboard}
               value={loginFormData.email}
               onChangeText={handleEmailText}
+              keyboardType="email-address"
             />
             <TextInput
               style={styles.input}

@@ -46,57 +46,11 @@ export default function ProfileScreen({ navigation }) {
         style={styles.bgrImg}
         source={require("../../assets/img/Photo_BG.jpg")}
       ></ImageBackground>
-      <View style={styles.postListWrap}>
+      <View style={styles.profileInfo}>
         <TouchableOpacity style={styles.logOutBtn} onPress={() => dispatch(userLogOut())}>
           <MaterialIcons name="logout" size={24} color="#BDBDBD" />
         </TouchableOpacity>
         <Text style={styles.profileName}>{userName}</Text>
-        <FlatList
-          style={styles.postsList}
-          data={userPostsData}
-          renderItem={({ item }) => (
-            <View style={styles.postItem}>
-              <Image source={{ uri: item.photo }} style={styles.postImg} />
-              <Text>{item.postMessage}</Text>
-              <View
-                style={{
-                  marginTop: 10,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <TouchableOpacity onPress={() => handleCommentsShow(item.photo, item.id)}>
-                    <EvilIcons name="comment" size={24} color="#BDBDBD" />
-                  </TouchableOpacity>
-                  <Text style={{ color: "#BDBDBD", marginLeft: 10 }}>0</Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("Map", {
-                        latitude: item.location.latitude,
-                        longitude: item.location.longitude,
-                      })
-                    }
-                  >
-                    <EvilIcons name="location" size={24} color="#BDBDBD" />
-                  </TouchableOpacity>
-                  <Text style={styles.postLocationText}>{item.postLocation}</Text>
-                </View>
-              </View>
-            </View>
-          )}
-        ></FlatList>
         <View style={styles.avatarContainer}>
           <Image
             style={{ width: 120, height: 120, borderRadius: 16 }}
@@ -107,6 +61,52 @@ export default function ProfileScreen({ navigation }) {
           </TouchableOpacity> */}
         </View>
       </View>
+      <FlatList
+        style={styles.postsList}
+        data={userPostsData}
+        renderItem={({ item }) => (
+          <View style={styles.postItem}>
+            <Image source={{ uri: item.photo }} style={styles.postImg} />
+            <Text>{item.postMessage}</Text>
+            <View
+              style={{
+                marginTop: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <TouchableOpacity onPress={() => handleCommentsShow(item.photo, item.id)}>
+                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+                <Text style={{ color: "#BDBDBD", marginLeft: 10 }}>0</Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Map", {
+                      latitude: item.location.latitude,
+                      longitude: item.location.longitude,
+                    })
+                  }
+                >
+                  <EvilIcons name="location" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+                <Text style={styles.postLocationText}>{item.postLocation}</Text>
+              </View>
+            </View>
+          </View>
+        )}
+      ></FlatList>
     </View>
   );
 }
@@ -114,15 +114,19 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 140,
+    height: "100%",
   },
-  postListWrap: {
-    backgroundColor: "white",
-    paddingTop: 92,
+  profileInfo: {
     alignItems: "center",
+    backgroundColor: "white",
+    paddingBottom: 15,
+    paddingTop: 20,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
   avatarContainer: {
     position: "absolute",
-    top: "-10%",
+    top: "-55%",
     width: 120,
     height: 120,
     backgroundColor: "#F6F6F6",
@@ -130,6 +134,8 @@ const styles = StyleSheet.create({
   },
   logOutBtn: {
     marginLeft: "auto",
+    paddingRight: 40,
+    marginBottom: 45,
   },
   profileName: {
     fontFamily: "Roboto-Bold",
@@ -139,10 +145,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.01,
     color: "#212121",
     textAlign: "center",
-    marginBottom: 33,
   },
   postsList: {
+    backgroundColor: "white",
     height: "100%",
+    paddingTop: 15,
   },
   postItem: {
     marginBottom: 34,

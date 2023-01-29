@@ -37,8 +37,8 @@ export default function PostsScreen({ navigation }) {
           source={{ uri: userState.userAvatar !== "" && userState.userAvatar }}
         />
         <View>
-          <Text style={styles.userName}>{userState.userName}</Text>
-          <Text style={styles.userEmail}>{userState.userEmail}</Text>
+          <Text style={styles.userName}>{userState.userAvatar && userState.userName}</Text>
+          <Text style={styles.userEmail}>{userState.userEmail && userState.userEmail}</Text>
         </View>
       </View>
       <FlatList
