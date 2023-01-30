@@ -42,7 +42,7 @@ export const authSignIn =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(getAuth(db), email, password);
-      console.log(user);
+      // console.log(user);
     } catch (error) {
       console.log(error.message);
     }
@@ -57,8 +57,16 @@ export const authStateChange = () => async (dispatch, getState) => {
           userAvatar: user.photoURL,
           userEmail: user.email,
         };
-        dispatch(authChangeState({ stateChange: true }));
         dispatch(updateUserProfile(userUpdateProfile));
+        dispatch(
+          authChangeState({
+            stateChange: true,
+            userId: user.uid,
+            userName: user.displayName,
+            userAvatar: user.photoURL,
+            userEmail: user.email,
+          })
+        );
       }
     });
   } catch (error) {}
