@@ -5,9 +5,12 @@ import { useState, useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 export default function PostsScreen({ navigation }) {
+  const defaultAvatar =
+    "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
+
   const [postsData, setpostsData] = useState(null);
   const userState = useSelector((state) => state.auth);
-  console.log(userState);
+
   useEffect(() => {
     const getPosts = async () => {
       try {
@@ -34,11 +37,11 @@ export default function PostsScreen({ navigation }) {
       <View style={styles.userInfo}>
         <Image
           style={styles.userInfoAvatar}
-          source={{ uri: userState.userAvatar !== "" && userState.userAvatar }}
+          source={{ uri: userState.userAvatar ? userState.userAvatar : defaultAvatar }}
         />
         <View>
-          <Text style={styles.userName}>{userState.userAvatar && userState.userName}</Text>
-          <Text style={styles.userEmail}>{userState.userEmail && userState.userEmail}</Text>
+          <Text style={styles.userName}>{userState.userName}</Text>
+          <Text style={styles.userEmail}>{userState.userEmail}</Text>
         </View>
       </View>
       <FlatList

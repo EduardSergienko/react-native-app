@@ -34,7 +34,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   const [userAvatar, setUserAvatar] = useState(null);
-  const [dbUserAvatar, setDbUserAvatar] = useState(null);
+
   const [galleryPermition, setgalleryPermition] = useState(null);
 
   const dispatch = useDispatch();
@@ -67,7 +67,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     setformData(registerFormData);
     dispatch(authSignUp(registerFormData));
     setregisterFormData(initialRegisterState);
-
+    setisShowKeyboard(false);
     Keyboard.dismiss();
   };
 
@@ -105,7 +105,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     const data = await uploadBytes(storageRef, file);
     const getCurrentPhoto = await getDownloadURL(ref(storage, `usersAvatars/${id}`));
     setregisterFormData((prevState) => ({ ...prevState, userAvatar: getCurrentPhoto }));
-    // setDbUserAvatar(getCurrentPhoto);
   };
 
   return (
@@ -143,6 +142,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               onSubmitEditing={hideKeyboard}
               value={registerFormData.email}
               onChangeText={handleEmailText}
+              keyboardType="email-address"
             />
             <TextInput
               style={styles.input}
@@ -153,11 +153,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               value={registerFormData.password}
               onChangeText={handlePasswordText}
             />
-            <TouchableOpacity
-              onPress={(hideKeyboard, onFormSubmit)}
-              activeOpacity={0.7}
-              style={styles.regBtn}
-            >
+            <TouchableOpacity onPress={onFormSubmit} activeOpacity={0.7} style={styles.regBtn}>
               <Text style={styles.btnTitle}>Register</Text>
             </TouchableOpacity>
             <TouchableOpacity

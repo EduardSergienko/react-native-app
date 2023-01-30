@@ -9,8 +9,7 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { authLogOut, updateUserProfile, authChangeState } from "./authSlice";
-import { async } from "@firebase/util";
+import { authLogOut, updateUserProfile } from "./authSlice";
 
 export const authSignUp =
   ({ email, login, password, userAvatar }) =>
@@ -24,14 +23,15 @@ export const authSignUp =
         photoURL: userAvatar,
       });
 
-      const { displayName, uid, photoURL, email } = getAuth(db).currentUser;
-      console.log(photoURL);
+      const { displayName, uid, photoURL } = getAuth(db).currentUser;
+
       dispatch(
         updateUserProfile({
           userId: uid,
           userName: displayName,
           userAvatar: photoURL,
           userEmail: email,
+          stateChange: true,
         })
       );
     } catch (error) {}
@@ -52,21 +52,13 @@ export const authStateChange = () => async (dispatch, getState) => {
     await onAuthStateChanged(getAuth(db), (user) => {
       if (user) {
         const userUpdateProfile = {
+          stateChange: true,
           userId: user.uid,
           userName: user.displayName,
           userAvatar: user.photoURL,
           userEmail: user.email,
         };
         dispatch(updateUserProfile(userUpdateProfile));
-        dispatch(
-          authChangeState({
-            stateChange: true,
-            userId: user.uid,
-            userName: user.displayName,
-            userAvatar: user.photoURL,
-            userEmail: user.email,
-          })
-        );
       }
     });
   } catch (error) {}

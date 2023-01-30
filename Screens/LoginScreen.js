@@ -75,7 +75,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
         <View
           style={{
             ...styles.wrap,
-            marginBottom: isShowKeyboard ? -200 : 0,
+            marginBottom: isShowKeyboard ? -100 : 0,
           }}
         >
           <Text style={styles.registration}>Login</Text>
