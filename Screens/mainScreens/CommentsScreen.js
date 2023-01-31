@@ -15,18 +15,27 @@ import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
 import { doc, collection, addDoc, query, onSnapshot } from "firebase/firestore";
 import { store } from "../../config";
+import { useSelector } from "react-redux";
 
 export default function CommentsScreen({ route }) {
   const { id } = route.params;
 
+  const { userAvatar, userId } = useSelector((state) => state.auth);
+  console.log(userId);
   const [photo, setphoto] = useState(null);
+  const [autorId, setautorId] = useState(null);
+  console.log(autorId);
   const [comment, setComment] = useState("");
   const [allComments, setallComments] = useState(null);
-
+  console.log(allComments);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
+  const defaultAvatar =
+    "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
+
   useEffect(() => {
     if (route.params) {
       setphoto(route.params.photo);
+      setautorId(route.params.currentUserId);
       getAllComments();
     }
   }, []);
@@ -42,6 +51,8 @@ export default function CommentsScreen({ route }) {
         const docRef = await addDoc(collection(postsRef, "comments"), {
           comment,
           date: commentDate.join(" | "),
+          avatarUri: userAvatar,
+          commentId: userId,
         });
         setisShowKeyboard(false);
         Keyboard.dismiss();
@@ -86,11 +97,35 @@ export default function CommentsScreen({ route }) {
           style={styles.commentList}
           data={allComments}
           renderItem={({ item }) => (
-            <View onStartShouldSetResponder={() => true} style={styles.commentContainer}>
-              <View style={styles.userAvatar}></View>
+            <View
+              onStartShouldSetResponder={() => true}
+              style={{
+                ...styles.commentContainer,
+                flexDirection: item.commentId === userId ? "row-reverse" : "row",
+              }}
+            >
+              <View
+                style={{
+                  ...styles.userAvatar,
+                  marginRight: item.commentId === userId ? 0 : 15,
+                  marginLeft: item.commentId === userId ? 15 : 0,
+                }}
+              >
+                <Image
+                  style={{ ...styles.userAvatar }}
+                  source={{ uri: item.avatarUri ? item.avatarUri : defaultAvatar }}
+                />
+              </View>
               <View style={styles.commentWrap}>
                 <Text style={styles.comment}>{item.comment}</Text>
-                <Text style={styles.commentDate}>{item.date}</Text>
+                <Text
+                  style={{
+                    ...styles.commentDate,
+                    textAlign: item.commentId === userId ? "left" : "right",
+                  }}
+                >
+                  {item.date}
+                </Text>
               </View>
             </View>
           )}
@@ -163,7 +198,6 @@ const styles = StyleSheet.create({
   },
   commentContainer: {
     flex: 1,
-    flexDirection: "row",
   },
   commentWrap: {
     width: 299,
@@ -176,7 +210,7 @@ const styles = StyleSheet.create({
   },
   commentDate: {
     fontFamily: "Roboto-Regulat",
-    textAlign: "right",
+    // textAlign: "right",
     fontSize: 10,
     lineHeight: 12,
     color: "#BDBDBD",
@@ -186,14 +220,15 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 13,
     lineHeight: 18,
-    color: "#212121",
+    // color: "#212121",
     marginBottom: 10,
   },
+
   userAvatar: {
     width: 28,
     height: 28,
     borderRadius: 50,
-    backgroundColor: "grey",
-    marginRight: 15,
+
+    // marginRight: 15,
   },
 });
