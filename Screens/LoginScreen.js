@@ -88,6 +88,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               value={loginFormData.email}
               onChangeText={handleEmailText}
               keyboardType="email-address"
+              cursorColor="#FF6C00"
             />
             <TextInput
               style={styles.input}
@@ -97,6 +98,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
               secureTextEntry={isPassworHiden}
               value={loginFormData.password}
               onChangeText={handlePasswordText}
+              cursorColor="#FF6C00"
             />
             <TouchableOpacity
               onPress={(hideKeyboard, onFormSubmit)}

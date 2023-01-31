@@ -79,19 +79,6 @@ export default function Home({ navigation }) {
             <Feather name="user" size={size} color={color} />
           ),
           headerShown: false,
-          // headerRight: ({ focused, color, size }) => (
-          //   <TouchableOpacity onPress={() => dispatch(userLogOut())} style={{ paddingRight: 20 }}>
-          //     <MaterialIcons name="logout" size={24} color="#BDBDBD" />
-          //   </TouchableOpacity>
-          // ),
-          // headerLeft: ({ focused, color, size }) => (
-          //   <TouchableOpacity
-          //     onPress={() => navigation.navigate("Create Post")}
-          //     style={{ paddingLeft: 20 }}
-          //   >
-          //     <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
-          //   </TouchableOpacity>
-          // ),
         }}
       />
     </NavTab.Navigator>

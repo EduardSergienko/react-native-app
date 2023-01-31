@@ -1,4 +1,5 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { Alert } from "react-native";
+
 import { db } from "../../config";
 import {
   getAuth,
@@ -35,7 +36,10 @@ export const authSignUp =
           stateChange: true,
         })
       );
-    } catch (error) {}
+    } catch (error) {
+      Alert.alert("Please fill in all fields of the form");
+      console.log(error);
+    }
   };
 
 export const authSignIn =
@@ -43,8 +47,8 @@ export const authSignIn =
   async (dispatch, getState) => {
     try {
       const user = await signInWithEmailAndPassword(getAuth(db), email, password);
-      // console.log(user);
     } catch (error) {
+      Alert.alert("Please fill in all fields of the form");
       console.log(error.message);
     }
   };
@@ -77,7 +81,7 @@ export const updateuserAvatar =
   async (dispatch, getState) => {
     try {
       const user = getAuth(db).currentUser;
-      console.log(getCurrentPhoto);
+
       await updateProfile(user, {
         photoURL: getCurrentPhoto,
       });

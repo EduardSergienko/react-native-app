@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 export default function CommentsScreen({ route }) {
   const { id } = route.params;
   const { userAvatar, userId } = useSelector((state) => state.auth);
+  console.log(userAvatar);
   const [photo, setphoto] = useState(null);
   const [autorId, setautorId] = useState(null);
   const [comment, setComment] = useState("");
@@ -34,7 +35,7 @@ export default function CommentsScreen({ route }) {
       setautorId(route.params.currentUserId);
       getAllComments();
     }
-  }, []);
+  }, [userAvatar]);
   const createComment = async () => {
     if (comment !== "") {
       try {
@@ -69,12 +70,30 @@ export default function CommentsScreen({ route }) {
         querySnapshot.forEach((doc) => {
           data.push({ ...doc.data(), id: doc.id });
         });
-        setallComments(data);
+        const updatedData = [];
+        data.forEach((item) => {
+          updatedData.push({
+            ...item,
+            avatarUri: item.commentId === userId ? userAvatar : item.avatarUri,
+          });
+          setallComments(updatedData);
+        });
+        // updateCommentAvatar(data);
       });
     } catch (error) {
       console.log(error);
     }
   };
+  // const updateCommentAvatar = (items) => {
+  //   const updatedData = [];
+  //   items.forEach((item) => {
+  //     updatedData.push({
+  //       ...item,
+  //       avatarUri: item.commentId === userId ? userAvatar : item.avatarUri,
+  //     });
+  //     setallComments(updatedData);
+  //   });
+  // };
 
   const hideKeyboard = () => {
     setisShowKeyboard(false);
@@ -142,6 +161,7 @@ export default function CommentsScreen({ route }) {
             value={comment}
             style={styles.input}
             placeholder="Add comment..."
+            cursorColor="#FF6C00"
           ></TextInput>
           <TouchableOpacity onPress={createComment} style={styles.addCommentBtn}>
             <AntDesign name="arrowup" size={24} color="white" />
