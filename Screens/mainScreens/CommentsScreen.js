@@ -13,21 +13,17 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { doc, collection, addDoc, query, onSnapshot } from "firebase/firestore";
+import { doc, collection, addDoc, query, onSnapshot, orderBy } from "firebase/firestore";
 import { store } from "../../config";
 import { useSelector } from "react-redux";
 
 export default function CommentsScreen({ route }) {
   const { id } = route.params;
-
   const { userAvatar, userId } = useSelector((state) => state.auth);
-  console.log(userId);
   const [photo, setphoto] = useState(null);
   const [autorId, setautorId] = useState(null);
-  console.log(autorId);
   const [comment, setComment] = useState("");
   const [allComments, setallComments] = useState(null);
-  console.log(allComments);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
@@ -64,7 +60,10 @@ export default function CommentsScreen({ route }) {
   };
   const getAllComments = async () => {
     try {
-      const postsCollection = query(collection(store, "posts", `${id}`, "comments"));
+      const postsCollection = query(
+        collection(store, "posts", `${id}`, "comments"),
+        orderBy("date")
+      );
       onSnapshot(postsCollection, (querySnapshot) => {
         const data = [];
         querySnapshot.forEach((doc) => {

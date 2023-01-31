@@ -90,6 +90,7 @@ export default function CreatePostScreen({ navigation }) {
         location,
         postMessage: postData.postName || "",
         postLocation: postData.postLocation || "",
+        date: Date.now(),
       });
     } catch (error) {
       console.log(error);

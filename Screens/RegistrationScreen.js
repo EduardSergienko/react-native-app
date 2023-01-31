@@ -82,7 +82,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -93,7 +92,7 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
     console.log(result.assets[0].uri);
 
     if (!result.canceled) {
-      await setUserAvatar(result.assets[0].uri);
+      setUserAvatar(result.assets[0].uri);
     }
   };
   const uploadUserAvatarToDb = async () => {

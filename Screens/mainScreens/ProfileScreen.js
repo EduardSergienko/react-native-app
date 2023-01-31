@@ -10,19 +10,23 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { store } from "../../config";
 import { useEffect, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
-import { userLogOut } from "../../redux/auth/autnOperation";
+import { userLogOut, updateuserAvatar } from "../../redux/auth/autnOperation";
 import { MaterialIcons } from "@expo/vector-icons";
-
+import * as ImagePicker from "expo-image-picker";
+import { db } from "../../config";
+import { uuidv4 } from "@firebase/util";
 export default function ProfileScreen({ navigation }) {
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
   const [userPostsData, setuserPostsData] = useState(null);
+  const [newUserAvatar, setNewUserAvatar] = useState(null);
   const dispatch = useDispatch();
   const { userId, userName, userAvatar } = useSelector((state) => state.auth);
-  console.log(userAvatar);
+
   const getCurrentUserPosts = async () => {
     try {
       const q = await query(collection(store, "posts"), where("userId", "==", userId));
@@ -39,9 +43,35 @@ export default function ProfileScreen({ navigation }) {
   };
   useEffect(() => {
     getCurrentUserPosts();
-  }, []);
+    if (newUserAvatar) {
+      uploadNewUserAvatarToDb();
+    }
+  }, [newUserAvatar]);
   const handleCommentsShow = (photo, id) => {
     navigation.navigate("Comments", { photo, id });
+  };
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setNewUserAvatar(result.assets[0].uri);
+    }
+  };
+  const uploadNewUserAvatarToDb = async () => {
+    const response = await fetch(newUserAvatar);
+    const file = await response.blob();
+    const id = uuidv4();
+    const storage = getStorage(db);
+    const storageRef = ref(storage, `usersAvatars/${id}`);
+    const data = await uploadBytes(storageRef, file);
+    const getCurrentPhoto = await getDownloadURL(ref(storage, `usersAvatars/${id}`));
+
+    dispatch(updateuserAvatar({ getCurrentPhoto }));
   };
   return (
     <View style={styles.container}>
@@ -59,9 +89,9 @@ export default function ProfileScreen({ navigation }) {
             style={{ width: 120, height: 120, borderRadius: 16 }}
             source={{ uri: userAvatar ? userAvatar : defaultAvatar }}
           />
-          {/* <TouchableOpacity onPress={pickImage} style={styles.addAvatar}>
-            <Image style={styles.addAvatar} source={require("../img/add.png")} />
-          </TouchableOpacity> */}
+          <TouchableOpacity onPress={pickImage} style={styles.addAvatar}>
+            <Image style={styles.addAvatar} source={require("../../img/add.png")} />
+          </TouchableOpacity>
         </View>
       </View>
       <FlatList
@@ -186,5 +216,10 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     justifyContent: "flex-end",
     alignItems: "center",
+  },
+  addAvatar: {
+    position: "absolute",
+    right: "-10%",
+    bottom: "10%",
   },
 });

@@ -9,7 +9,8 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { authLogOut, updateUserProfile } from "./authSlice";
+import { authLogOut, updateUserProfile, updateAvatar } from "./authSlice";
+import { async } from "@firebase/util";
 
 export const authSignUp =
   ({ email, login, password, userAvatar }) =>
@@ -70,3 +71,24 @@ export const userLogOut = () => async (dispatch, getState) => {
     dispatch(authLogOut());
   } catch (error) {}
 };
+
+export const updateuserAvatar =
+  ({ getCurrentPhoto }) =>
+  async (dispatch, getState) => {
+    try {
+      const user = getAuth(db).currentUser;
+      console.log(getCurrentPhoto);
+      await updateProfile(user, {
+        photoURL: getCurrentPhoto,
+      });
+      const { photoURL } = getAuth(db).currentUser;
+
+      await dispatch(
+        updateAvatar({
+          userAvatar: photoURL,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
