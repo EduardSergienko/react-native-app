@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   ScrollView,
+  Switch,
 } from "react-native";
 import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType, FlashMode } from "expo-camera";
@@ -33,7 +34,8 @@ export default function CreatePostScreen({ navigation }) {
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
-
+  const [isEnabled, setIsEnabled] = useState(false);
+  console.log(isEnabled);
   const { userId, userName } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -114,6 +116,7 @@ export default function CreatePostScreen({ navigation }) {
         postMessage: postData.postName || "",
         postLocation: postData.postLocation || "",
         date: Date.now(),
+        private: isEnabled,
       });
     } catch (error) {
       console.log(error);
@@ -132,7 +135,7 @@ export default function CreatePostScreen({ navigation }) {
     const getCurrentPhoto = await getDownloadURL(ref(storage, `postImage/${id}`));
     return getCurrentPhoto;
   };
-
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   return (
     <ScrollView showsVerticalScrollIndica style={styles.container}>
       <View style={{ paddingBottom: 25 }}>
@@ -197,6 +200,19 @@ export default function CreatePostScreen({ navigation }) {
             size={30}
             color="#BDBDBD"
           />
+          <View style={styles.switchContainer}>
+            <Text>Public</Text>
+            <Switch
+              style={{ marginHorizontal: 15 }}
+              trackColor={{ false: "#767577", true: "#eef0eb" }}
+              thumbColor={isEnabled ? "#FF6C00" : "#eef0eb"}
+              ios_backgroundColor="#e0dfdc"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+            <Text>Private</Text>
+          </View>
+
           <TouchableOpacity
             disabled={isCreateBtnDisabled}
             onPress={crestePost}
@@ -324,5 +340,12 @@ const styles = StyleSheet.create({
     width: 70,
     alignItems: "center",
     borderRadius: 30,
+  },
+  switchContainer: {
+    marginTop: 25,
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

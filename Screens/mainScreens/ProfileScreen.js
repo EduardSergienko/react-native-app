@@ -146,7 +146,7 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 140,
+    paddingTop: 100,
     height: "100%",
   },
   profileInfo: {
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginRight: "auto",
   },
   postImg: {
-    width: 343,
+    width: 360,
     height: 240,
     borderRadius: 10,
     marginBottom: 8,

@@ -1,5 +1,5 @@
 import { Text, View, Image, FlatList, StyleSheet, TouchableOpacity } from "react-native";
-import { query, onSnapshot, collection, orderBy } from "firebase/firestore";
+import { query, onSnapshot, collection, orderBy, where } from "firebase/firestore";
 import { store } from "../../config";
 import { useState, useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
@@ -15,7 +15,12 @@ export default function PostsScreen({ navigation }) {
   useEffect(() => {
     const getPosts = async () => {
       try {
-        const q = query(collection(store, "posts"), orderBy("date", "desc"));
+        const q = query(
+          collection(store, "posts"),
+          orderBy("date", "desc"),
+          where("private", "==", false)
+        );
+
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const data = [];
           querySnapshot.forEach((doc) => {
@@ -113,7 +118,7 @@ const styles = StyleSheet.create({
     marginRight: "auto",
   },
   postImg: {
-    width: 343,
+    width: 360,
     height: 240,
     borderRadius: 10,
     marginBottom: 8,

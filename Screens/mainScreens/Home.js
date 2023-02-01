@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
       backBehavior="history"
       screenOptions={{
         headerTitleAlign: "center",
-        tabBarStyle: { paddingHorizontal: 70, height: 70 },
+        tabBarStyle: { paddingHorizontal: 60, height: 60 },
         tabBarShowLabel: false,
       }}
     >
