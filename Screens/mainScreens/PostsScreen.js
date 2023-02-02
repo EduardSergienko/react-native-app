@@ -2,7 +2,7 @@ import { Text, View, Image, FlatList, StyleSheet, TouchableOpacity } from "react
 import { query, onSnapshot, collection, orderBy, where } from "firebase/firestore";
 import { store } from "../../config";
 import { useState, useEffect } from "react";
-import { EvilIcons } from "@expo/vector-icons";
+import { FontAwesome, EvilIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 export default function PostsScreen({ navigation }) {
   const defaultAvatar =
@@ -74,9 +74,20 @@ export default function PostsScreen({ navigation }) {
                     handleCommentsShow(item.photo, item.id, item.userId, item.commentAmount)
                   }
                 >
-                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                  {item.commentAmount > 0 ? (
+                    <FontAwesome name="comment" size={20} color="#FF6C00" />
+                  ) : (
+                    <FontAwesome name="comment-o" size={20} color="#BDBDBD" />
+                  )}
                 </TouchableOpacity>
-                <Text style={{ color: "#BDBDBD", marginLeft: 10 }}>{item.commentAmount}</Text>
+                <Text
+                  style={{
+                    ...styles.commentAmountNumber,
+                    color: item.commentAmount > 0 ? "#212121" : "#BDBDBD",
+                  }}
+                >
+                  {item.commentAmount}
+                </Text>
               </View>
 
               <View
@@ -124,6 +135,11 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 10,
     marginBottom: 8,
+  },
+  commentAmountNumber: {
+    fontSize: 16,
+    lineHeight: 19,
+    marginLeft: 10,
   },
   postLocationText: {
     fontFamily: "Roboto-Regulat",
