@@ -7,15 +7,16 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { store } from "../../config";
 import { useEffect, useState } from "react";
-import { EvilIcons, FontAwesome } from "@expo/vector-icons";
+import { EvilIcons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { userLogOut, updateuserAvatar } from "../../redux/auth/autnOperation";
-import { MaterialIcons } from "@expo/vector-icons";
+
 import * as ImagePicker from "expo-image-picker";
 import { db } from "../../config";
 import { uuidv4 } from "@firebase/util";
@@ -48,6 +49,19 @@ export default function ProfileScreen({ navigation }) {
       uploadNewUserAvatarToDb();
     }
   }, [newUserAvatar]);
+
+  const createThreeButtonAlert = async (postId) =>
+    Alert.alert("A you sure?", "Delete", [
+      {
+        text: "Cancel",
+        onPress: () => {
+          return;
+        },
+        style: "cancel",
+      },
+      { text: "OK", onPress: () => deleteDoc(doc(store, "posts", `${postId}`)) },
+    ]);
+
   const handleCommentsShow = (photo, id, currentUserId, commentAmount) => {
     navigation.navigate("Comments", { photo, id, currentUserId, commentAmount });
   };
@@ -100,6 +114,18 @@ export default function ProfileScreen({ navigation }) {
         data={userPostsData}
         renderItem={({ item }) => (
           <View style={styles.postItem}>
+            <TouchableOpacity
+              onPress={() => createThreeButtonAlert(item.id)}
+              style={styles.deletePostBtn}
+            >
+              <MaterialIcons
+                style={{ textAlign: "center" }}
+                name="delete-forever"
+                size={20}
+                color="#BDBDBD"
+              />
+            </TouchableOpacity>
+
             <Image source={{ uri: item.photo }} style={styles.postImg} />
             <Text>{item.postMessage}</Text>
             <View
@@ -225,6 +251,18 @@ const styles = StyleSheet.create({
     color: "#212121",
     textDecorationLine: "underline",
     marginLeft: 5,
+  },
+  deletePostBtn: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 10,
+    borderRadius: 50,
+    justifyContent: "center",
+    width: 30,
+    height: 30,
+    borderWidth: 1,
+    borderColor: "#BDBDBD",
   },
   bgrImg: {
     position: "absolute",
