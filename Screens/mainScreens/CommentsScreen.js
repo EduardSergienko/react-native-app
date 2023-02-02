@@ -122,7 +122,13 @@ export default function CommentsScreen({ route }) {
 
   return (
     <TouchableWithoutFeedback onPress={hideKeyboard}>
-      <View onStartShouldSetResponder={() => true} style={styles.container}>
+      <View
+        onStartShouldSetResponder={() => true}
+        style={{
+          ...styles.container,
+          top: isShowKeyboard && Platform.OS === "ios" ? -150 : 0,
+        }}
+      >
         <Image style={styles.img} source={{ uri: photo }} />
         <FlatList
           style={styles.commentList}
@@ -164,7 +170,7 @@ export default function CommentsScreen({ route }) {
         <View
           style={{
             ...styles.inputWrap,
-            marginBottom: isShowKeyboard && Platform.OS === "ios" ? 350 : 20,
+            marginBottom: isShowKeyboard && Platform.OS === "ios" ? 150 : 20,
           }}
         >
           <TextInput
@@ -188,6 +194,7 @@ export default function CommentsScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 32,
+
     alignItems: "center",
     backgroundColor: "white",
     height: "100%",
