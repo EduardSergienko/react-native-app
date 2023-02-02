@@ -13,19 +13,29 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { doc, collection, addDoc, query, onSnapshot, orderBy } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  orderBy,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { store } from "../../config";
 import { useSelector } from "react-redux";
 
 export default function CommentsScreen({ route }) {
-  const { id } = route.params;
+  const { id, commentAmount } = route.params;
   const { userAvatar, userId } = useSelector((state) => state.auth);
-  console.log(userAvatar);
   const [photo, setphoto] = useState(null);
   const [autorId, setautorId] = useState(null);
   const [comment, setComment] = useState("");
   const [allComments, setallComments] = useState(null);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
+  const [commentsAmount, setCommentsAmount] = useState(commentAmount);
+  console.log(commentsAmount);
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
 
@@ -34,23 +44,28 @@ export default function CommentsScreen({ route }) {
       setphoto(route.params.photo);
       setautorId(route.params.currentUserId);
       getAllComments();
+      updatePost();
     }
-  }, [userAvatar]);
+  }, [userAvatar, commentsAmount]);
   const createComment = async () => {
     if (comment !== "") {
       try {
-        const postsRef = await doc(store, "posts", `${id}`);
+        setCommentsAmount(commentsAmount + 1);
+
+        const postsRef = doc(store, "posts", `${id}`);
+
         const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
         const commentDate = [];
         const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
         const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 5));
 
-        const docRef = await addDoc(collection(postsRef, "comments"), {
+        await addDoc(collection(postsRef, "comments"), {
           comment,
           date: commentDate.join(" | "),
           avatarUri: userAvatar,
           commentId: userId,
         });
+
         setisShowKeyboard(false);
         Keyboard.dismiss();
         setComment("");
@@ -78,22 +93,19 @@ export default function CommentsScreen({ route }) {
           });
           setallComments(updatedData);
         });
-        // updateCommentAvatar(data);
       });
     } catch (error) {
       console.log(error);
     }
   };
-  // const updateCommentAvatar = (items) => {
-  //   const updatedData = [];
-  //   items.forEach((item) => {
-  //     updatedData.push({
-  //       ...item,
-  //       avatarUri: item.commentId === userId ? userAvatar : item.avatarUri,
-  //     });
-  //     setallComments(updatedData);
-  //   });
-  // };
+
+  const updatePost = async () => {
+    const postsRef = doc(store, "posts", `${id}`);
+
+    updateDoc(postsRef, {
+      commentAmount: commentsAmount,
+    });
+  };
 
   const hideKeyboard = () => {
     setisShowKeyboard(false);

@@ -35,7 +35,7 @@ export default function CreatePostScreen({ navigation }) {
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [isEnabled, setIsEnabled] = useState(false);
-  console.log(isEnabled);
+
   const { userId, userName } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -117,6 +117,7 @@ export default function CreatePostScreen({ navigation }) {
         postLocation: postData.postLocation || "",
         date: Date.now(),
         private: isEnabled,
+        commentAmount: 0,
       });
     } catch (error) {
       console.log(error);
