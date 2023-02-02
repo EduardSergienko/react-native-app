@@ -21,7 +21,7 @@ export default function PostsScreen({ navigation }) {
           where("private", "==", false)
         );
 
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        onSnapshot(q, (querySnapshot) => {
           const data = [];
           querySnapshot.forEach((doc) => {
             data.push({ ...doc.data(), id: doc.id });

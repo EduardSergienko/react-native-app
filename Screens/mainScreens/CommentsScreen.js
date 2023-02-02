@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 
 export default function CommentsScreen({ route }) {
   const { id, commentAmount } = route.params;
+  console.log(id);
   const { userAvatar, userId } = useSelector((state) => state.auth);
   const [photo, setphoto] = useState(null);
   const [autorId, setautorId] = useState(null);
@@ -197,8 +198,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   inputWrap: {
-    // position: "absolute",
-    // bottom:  20,
     marginBottom: 20,
     width: 343,
   },
@@ -225,6 +224,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   commentList: {
+    paddingHorizontal: 10,
     paddingTop: 25,
   },
   commentContainer: {
@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
   },
   commentDate: {
     fontFamily: "Roboto-Regulat",
-    // textAlign: "right",
     fontSize: 10,
     lineHeight: 12,
     color: "#BDBDBD",
@@ -251,7 +250,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontSize: 13,
     lineHeight: 18,
-    // color: "#212121",
     marginBottom: 10,
   },
 
@@ -259,7 +257,5 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 50,
-
-    // marginRight: 15,
   },
 });

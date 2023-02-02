@@ -13,7 +13,7 @@ import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { store } from "../../config";
 import { useEffect, useState } from "react";
-import { EvilIcons } from "@expo/vector-icons";
+import { EvilIcons, FontAwesome } from "@expo/vector-icons";
 import { userLogOut, updateuserAvatar } from "../../redux/auth/autnOperation";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -24,16 +24,17 @@ export default function ProfileScreen({ navigation }) {
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
   const [userPostsData, setuserPostsData] = useState(null);
   const [newUserAvatar, setNewUserAvatar] = useState(null);
+  console.log(userPostsData);
   const dispatch = useDispatch();
   const { userId, userName, userAvatar } = useSelector((state) => state.auth);
 
   const getCurrentUserPosts = async () => {
     try {
-      const q = await query(collection(store, "posts"), where("userId", "==", userId));
+      const q = query(collection(store, "posts"), where("userId", "==", userId));
       onSnapshot(q, (querySnapshot) => {
         const data = [];
         querySnapshot.forEach((doc) => {
-          data.push({ ...doc.data() });
+          data.push({ ...doc.data(), id: doc.id });
         });
         setuserPostsData(data);
       });
@@ -47,8 +48,8 @@ export default function ProfileScreen({ navigation }) {
       uploadNewUserAvatarToDb();
     }
   }, [newUserAvatar]);
-  const handleCommentsShow = (photo, id) => {
-    navigation.navigate("Comments", { photo, id });
+  const handleCommentsShow = (photo, id, currentUserId, commentAmount) => {
+    navigation.navigate("Comments", { photo, id, currentUserId, commentAmount });
   };
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -113,10 +114,25 @@ export default function ProfileScreen({ navigation }) {
                   flexDirection: "row",
                 }}
               >
-                <TouchableOpacity onPress={() => handleCommentsShow(item.photo, item.id)}>
-                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                <TouchableOpacity
+                  onPress={() =>
+                    handleCommentsShow(item.photo, item.id, item.userId, item.commentAmount)
+                  }
+                >
+                  {item.commentAmount > 0 ? (
+                    <FontAwesome name="comment" size={20} color="#FF6C00" />
+                  ) : (
+                    <FontAwesome name="comment-o" size={20} color="#BDBDBD" />
+                  )}
                 </TouchableOpacity>
-                <Text style={{ color: "#BDBDBD", marginLeft: 10 }}>0</Text>
+                <Text
+                  style={{
+                    ...styles.commentAmountNumber,
+                    color: item.commentAmount > 0 ? "#212121" : "#BDBDBD",
+                  }}
+                >
+                  {item.commentAmount}
+                </Text>
               </View>
 
               <View
@@ -195,6 +211,11 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 10,
     marginBottom: 8,
+  },
+  commentAmountNumber: {
+    fontSize: 16,
+    lineHeight: 19,
+    marginLeft: 10,
   },
   postLocationText: {
     fontFamily: "Roboto-Regulat",
