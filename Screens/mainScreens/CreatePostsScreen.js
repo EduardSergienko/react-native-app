@@ -33,7 +33,7 @@ export default function CreatePostScreen({ navigation }) {
   const [photo, setphoto] = useState(null);
   const [location, setLocation] = useState(null);
   const [locationPermissions, setlocationPermissions] = useState(false);
-  console.log(locationPermissions);
+
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
@@ -70,7 +70,6 @@ export default function CreatePostScreen({ navigation }) {
         ]);
         return;
       }
-
       const { coords } = await Location.getCurrentPositionAsync({});
       console.log(coords);
       setLocation(coords);
@@ -80,7 +79,6 @@ export default function CreatePostScreen({ navigation }) {
         latitude: coords.latitude,
         longitude: coords.longitude,
       }));
-
       // const { granted } = await Camera.getCameraPermissionsAsync();
       // if (granted) {
       //   setHasPermission(granted);
