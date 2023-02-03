@@ -95,16 +95,18 @@ export default function PostsScreen({ navigation }) {
                   flexDirection: "row",
                 }}
               >
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Map", {
-                      latitude: item.location.latitude,
-                      longitude: item.location.longitude,
-                    })
-                  }
-                >
-                  <EvilIcons name="location" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
+                {item.location !== null && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("Map", {
+                        latitude: item.location.latitude,
+                        longitude: item.location.longitude,
+                      })
+                    }
+                  >
+                    <EvilIcons name="location" size={24} color="#BDBDBD" />
+                  </TouchableOpacity>
+                )}
                 <Text style={styles.postLocationText}>{item.postLocation}</Text>
               </View>
             </View>

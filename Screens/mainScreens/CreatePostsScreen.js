@@ -32,6 +32,8 @@ export default function CreatePostScreen({ navigation }) {
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [locationPermissions, setlocationPermissions] = useState(false);
+  console.log(locationPermissions);
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
@@ -48,6 +50,37 @@ export default function CreatePostScreen({ navigation }) {
       if (status === "granted") {
         setHasPermission("granted");
       }
+      const locationPermission = await Location.requestForegroundPermissionsAsync();
+
+      if (locationPermission.status !== "granted") {
+        Alert.alert("No access to location", "Please, give permission and reload App", [
+          {
+            text: "Cancel",
+            onPress: () => {
+              return;
+            },
+            style: "cancel",
+          },
+          {
+            text: "Go to settings",
+            onPress: () => {
+              return Linking.openURL("app-settings:");
+            },
+          },
+        ]);
+        return;
+      }
+
+      const { coords } = await Location.getCurrentPositionAsync({});
+      console.log(coords);
+      setLocation(coords);
+      setpostData((prevState) => ({
+        ...prevState,
+
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      }));
+
       // const { granted } = await Camera.getCameraPermissionsAsync();
       // if (granted) {
       //   setHasPermission(granted);
@@ -93,28 +126,6 @@ export default function CreatePostScreen({ navigation }) {
 
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("No access to location", "Please, give permission", [
-        {
-          text: "OK",
-          onPress: () => {
-            return;
-          },
-        },
-      ]);
-      return;
-    }
-
-    let { coords } = await Location.getCurrentPositionAsync({});
-
-    setLocation(coords);
-    setpostData((prevState) => ({
-      ...prevState,
-
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    }));
 
     setphoto(photo.uri);
     setpostData((prevState) => ({

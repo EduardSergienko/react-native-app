@@ -166,7 +166,7 @@ export default function ProfileScreen({ navigation }) {
                   flexDirection: "row",
                 }}
               >
-                {item.location && (
+                {item.location !== null && (
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("Map", {
