@@ -8,6 +8,7 @@ import {
   ScrollView,
   Switch,
   Alert,
+  Linking,
 } from "react-native";
 import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType, FlashMode } from "expo-camera";
@@ -37,53 +38,83 @@ export default function CreatePostScreen({ navigation }) {
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [isEnabled, setIsEnabled] = useState(false);
-
   const { userId, userName } = useSelector((state) => state.auth);
-
   useEffect(() => {
     (async () => {
-      await Camera.requestCameraPermissionsAsync();
-      const { granted } = await Camera.getCameraPermissionsAsync();
-      setHasPermission(granted);
+      // await MediaLibrary.requestPermissionsAsync();
 
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("No access to location", "Please, give permission", [
-          {
-            text: "OK",
-            onPress: () => {
-              return;
-            },
-          },
-        ]);
-        return;
+      const { status } = await Camera.requestCameraPermissionsAsync();
+
+      if (status === "granted") {
+        setHasPermission("granted");
       }
-      await MediaLibrary.requestPermissionsAsync();
-
-      let { coords } = await Location.getCurrentPositionAsync({});
-
-      setLocation(coords);
-      setpostData((prevState) => ({
-        ...prevState,
-
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      }));
+      // const { granted } = await Camera.getCameraPermissionsAsync();
+      // if (granted) {
+      //   setHasPermission(granted);
+      // }
     })();
   }, []);
-  if (!hasPermission) {
+
+  if (hasPermission === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Please, give permission on your settings </Text>
+        <TouchableOpacity onPress={() => Linking.openURL("app-settings:")}>
+          <Text style={styles.goToSettingsLink}>Go to settings</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  if (hasPermission === false) {
     Alert.alert("No access to camera", "Please, give permission", [
+      {
+        text: "Cancel",
+        onPress: () => {
+          return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <Text>Please, give permission on your settings </Text>
+              <TouchableOpacity onPress={() => Linking.openURL("app-settings:")}>
+                <Text style={styles.goToSettingsLink}>Go to settings</Text>
+              </TouchableOpacity>
+            </View>
+          );
+        },
+        style: "cancel",
+      },
       {
         text: "OK",
         onPress: () => {
-          return;
+          return Linking.openURL("app-settings:");
         },
       },
     ]);
     return;
   }
+
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("No access to location", "Please, give permission", [
+        {
+          text: "OK",
+          onPress: () => {
+            return;
+          },
+        },
+      ]);
+      return;
+    }
+
+    let { coords } = await Location.getCurrentPositionAsync({});
+
+    setLocation(coords);
+    setpostData((prevState) => ({
+      ...prevState,
+
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    }));
 
     setphoto(photo.uri);
     setpostData((prevState) => ({
@@ -162,6 +193,7 @@ export default function CreatePostScreen({ navigation }) {
     return getCurrentPhoto;
   };
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
   return (
     <ScrollView showsVerticalScrollIndica style={styles.container}>
       <View style={{ paddingBottom: 25 }}>
@@ -373,5 +405,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  goToSettingsLink: {
+    fontSize: 20,
+    marginTop: 20,
+    color: "#349eeb",
   },
 });
