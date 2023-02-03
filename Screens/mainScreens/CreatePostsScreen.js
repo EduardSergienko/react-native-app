@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Switch,
+  Alert,
 } from "react-native";
 import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType, FlashMode } from "expo-camera";
@@ -26,6 +27,7 @@ import { store } from "../../config";
 
 export default function CreatePostScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
+  console.log(hasPermission);
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
   const [location, setLocation] = useState(null);
@@ -41,11 +43,12 @@ export default function CreatePostScreen({ navigation }) {
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
+      const { granted } = await Camera.getCameraPermissionsAsync();
+      setHasPermission(granted);
+
       let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
-      if (status && locationStatus === "granted") {
-        setHasPermission("granted");
-      }
+
       const { coords } = await Location.getCurrentPositionAsync({});
 
       setLocation(coords);
@@ -57,6 +60,16 @@ export default function CreatePostScreen({ navigation }) {
       }));
     })();
   }, []);
+  if (!hasPermission) {
+    return Alert.alert("No access to camera", "Please, give permission", [
+      {
+        text: "OK",
+        onPress: () => {
+          return;
+        },
+      },
+    ]);
+  }
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
 
