@@ -25,7 +25,7 @@ export default function ProfileScreen({ navigation }) {
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
   const [userPostsData, setuserPostsData] = useState(null);
   const [newUserAvatar, setNewUserAvatar] = useState(null);
-  console.log(userPostsData);
+
   const dispatch = useDispatch();
   const { userId, userName, userAvatar } = useSelector((state) => state.auth);
 
@@ -166,16 +166,19 @@ export default function ProfileScreen({ navigation }) {
                   flexDirection: "row",
                 }}
               >
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Map", {
-                      latitude: item.location.latitude,
-                      longitude: item.location.longitude,
-                    })
-                  }
-                >
-                  <EvilIcons name="location" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
+                {item.location && (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("Map", {
+                        latitude: item.location.latitude,
+                        longitude: item.location.longitude,
+                      })
+                    }
+                  >
+                    <EvilIcons name="location" size={24} color="#BDBDBD" />
+                  </TouchableOpacity>
+                )}
+
                 <Text style={styles.postLocationText}>{item.postLocation}</Text>
               </View>
             </View>

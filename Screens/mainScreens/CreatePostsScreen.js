@@ -27,7 +27,7 @@ import { store } from "../../config";
 
 export default function CreatePostScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
-  console.log(hasPermission);
+
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
   const [location, setLocation] = useState(null);
@@ -42,14 +42,25 @@ export default function CreatePostScreen({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
+      await Camera.requestCameraPermissionsAsync();
       const { granted } = await Camera.getCameraPermissionsAsync();
       setHasPermission(granted);
 
-      let { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("No access to location", "Please, give permission", [
+          {
+            text: "OK",
+            onPress: () => {
+              return;
+            },
+          },
+        ]);
+        return;
+      }
       await MediaLibrary.requestPermissionsAsync();
 
-      const { coords } = await Location.getCurrentPositionAsync({});
+      let { coords } = await Location.getCurrentPositionAsync({});
 
       setLocation(coords);
       setpostData((prevState) => ({
@@ -61,7 +72,7 @@ export default function CreatePostScreen({ navigation }) {
     })();
   }, []);
   if (!hasPermission) {
-    return Alert.alert("No access to camera", "Please, give permission", [
+    Alert.alert("No access to camera", "Please, give permission", [
       {
         text: "OK",
         onPress: () => {
@@ -69,6 +80,7 @@ export default function CreatePostScreen({ navigation }) {
         },
       },
     ]);
+    return;
   }
   const takePhoto = async () => {
     const photo = await cameraData.takePictureAsync();
