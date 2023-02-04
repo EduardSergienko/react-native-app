@@ -9,6 +9,7 @@ import {
   Switch,
   Alert,
   Linking,
+  ActivityIndicator,
 } from "react-native";
 import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType, FlashMode } from "expo-camera";
@@ -32,7 +33,7 @@ export default function CreatePostScreen({ navigation }) {
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
   const [location, setLocation] = useState(null);
-  const [locationPermissions, setlocationPermissions] = useState(false);
+  const [allPermissionsChecked, setlocationPermissions] = useState(true);
 
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
@@ -44,47 +45,58 @@ export default function CreatePostScreen({ navigation }) {
   useEffect(() => {
     (async () => {
       // await MediaLibrary.requestPermissionsAsync();
-
-      const { status } = await Camera.requestCameraPermissionsAsync();
-
-      if (status === "granted") {
-        setHasPermission("granted");
-      }
+      setlocationPermissions(false);
       const locationPermission = await Location.requestForegroundPermissionsAsync();
 
       if (locationPermission.status !== "granted") {
         Alert.alert("No access to location", "Please, give permission and reload App", [
           {
             text: "Cancel",
-            onPress: () => {
-              return;
-            },
+            onPress: () => setlocationPermissions(true),
             style: "cancel",
           },
           {
             text: "Go to settings",
             onPress: () => {
+              setlocationPermissions(false);
               return Linking.openURL("app-settings:");
             },
           },
         ]);
-        return;
+      } else {
+        const { coords } = await Location.getCurrentPositionAsync({});
+        console.log(coords);
+        setLocation(coords);
+        setlocationPermissions(true);
       }
-      const { coords } = await Location.getCurrentPositionAsync({});
-      console.log(coords);
-      setLocation(coords);
-      setpostData((prevState) => ({
-        ...prevState,
 
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      }));
+      // setpostData((prevState) => ({
+      //   ...prevState,
+
+      //   latitude: coords.latitude,
+      //   longitude: coords.longitude,
+      // }));
+
+      const { status } = await Camera.requestCameraPermissionsAsync();
+
+      if (status === "granted") {
+        setHasPermission("granted");
+      }
+
       // const { granted } = await Camera.getCameraPermissionsAsync();
       // if (granted) {
       //   setHasPermission(granted);
       // }
     })();
   }, []);
+
+  if (!allPermissionsChecked) {
+    return (
+      <View style={{ paddingTop: 100 }}>
+        <ActivityIndicator color="#0000ff" size={"large"} />
+      </View>
+    );
+  }
 
   if (hasPermission === null) {
     return (

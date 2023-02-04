@@ -13,27 +13,28 @@ export default function PostsScreen({ navigation }) {
   const userState = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const q = query(
-          collection(store, "posts"),
-          orderBy("date", "desc"),
-          where("private", "==", false)
-        );
-
-        onSnapshot(q, (querySnapshot) => {
-          const data = [];
-          querySnapshot.forEach((doc) => {
-            data.push({ ...doc.data(), id: doc.id });
-          });
-          setpostsData(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    };
     getPosts();
   }, []);
+
+  const getPosts = () => {
+    try {
+      const q = query(
+        collection(store, "posts"),
+        orderBy("date", "desc"),
+        where("private", "==", false)
+      );
+
+      onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({ ...doc.data(), id: doc.id });
+        });
+        setpostsData(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleCommentsShow = (photo, id, currentUserId, commentAmount) => {
     navigation.navigate("Comments", { photo, id, currentUserId, commentAmount });
