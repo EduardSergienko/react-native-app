@@ -20,35 +20,38 @@ import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../config";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { store } from "../../config";
-
+import Slider from "@react-native-community/slider";
 export default function CreatePostScreen({ navigation }) {
-  const [hasPermission, setHasPermission] = useState(null);
-
+  // ===============Camera settings=======================================
+  const [zoomValue, setZoomValue] = useState(0);
+  const [range, setrange] = useState(0.03);
   const [cameraData, setcameraData] = useState();
   const [photo, setphoto] = useState(null);
+  const [cameraType, setCameraType] = useState(CameraType.back);
+  const [flashMode, setFlashMode] = useState(FlashMode.off);
+  // =======================================================================
+  const [hasPermission, setHasPermission] = useState(null);
   const [location, setLocation] = useState(null);
   const [allPermissionsChecked, setlocationPermissions] = useState(true);
-
   const [postData, setpostData] = useState({});
   const [photoAction, setphotoAction] = useState("Load photo");
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
-  const [cameraType, setCameraType] = useState(CameraType.back);
-  const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [isEnabled, setIsEnabled] = useState(false);
   const { userId, userName } = useSelector((state) => state.auth);
+
   useEffect(() => {
     (async () => {
-      // await MediaLibrary.requestPermissionsAsync();
       setlocationPermissions(false);
-      const locationPermission = await Location.requestForegroundPermissionsAsync();
+      // ======================Location actions===================================
+      const { status: locationPermission } = await Location.requestForegroundPermissionsAsync();
 
-      if (locationPermission.status !== "granted") {
+      if (locationPermission !== "granted") {
         Alert.alert("No access to location", "Please, give permission and reload App", [
           {
             text: "Cancel",
@@ -58,7 +61,7 @@ export default function CreatePostScreen({ navigation }) {
           {
             text: "Go to settings",
             onPress: () => {
-              setlocationPermissions(false);
+              setlocationPermissions(true);
               return Linking.openURL("app-settings:");
             },
           },
@@ -69,24 +72,14 @@ export default function CreatePostScreen({ navigation }) {
         setLocation(coords);
         setlocationPermissions(true);
       }
-
-      // setpostData((prevState) => ({
-      //   ...prevState,
-
-      //   latitude: coords.latitude,
-      //   longitude: coords.longitude,
-      // }));
-
+      // =================================================================================
+      // =======================Camera actions============================================
       const { status } = await Camera.requestCameraPermissionsAsync();
 
       if (status === "granted") {
         setHasPermission("granted");
       }
-
-      // const { granted } = await Camera.getCameraPermissionsAsync();
-      // if (granted) {
-      //   setHasPermission(granted);
-      // }
+      // =================================================================================
     })();
   }, []);
 
@@ -146,31 +139,7 @@ export default function CreatePostScreen({ navigation }) {
     setphotoAction("Edit photo");
     setisCreateBtnDisabled(false);
   };
-  const takeNewPhoto = () => {
-    setphoto(null);
-    setphotoAction("Load photo");
-    setisCreateBtnDisabled(true);
-  };
-  const handlePostName = (text) => {
-    setpostData((prevState) => ({ ...prevState, postName: text }));
-  };
-  const handlePostLocation = (text) => {
-    setpostData((prevState) => ({ ...prevState, postLocation: text }));
-  };
-  const handleCameraFlip = () => {
-    if (cameraType === CameraType.back) {
-      setCameraType(CameraType.front);
-    } else {
-      setCameraType(CameraType.back);
-    }
-  };
-  const handleCameraFlashMode = () => {
-    if (flashMode === FlashMode.off) {
-      setFlashMode(FlashMode.on);
-    } else {
-      setFlashMode(FlashMode.off);
-    }
-  };
+
   const crestePost = () => {
     uploadPostToServer();
     if (photo) {
@@ -213,121 +182,156 @@ export default function CreatePostScreen({ navigation }) {
     const getCurrentPhoto = await getDownloadURL(ref(storage, `postImage/${id}`));
     return getCurrentPhoto;
   };
+  // =================Buttons and inputs actions================================================
+  const takeNewPhoto = () => {
+    setphoto(null);
+    setphotoAction("Load photo");
+    setisCreateBtnDisabled(true);
+  };
+  const handlePostName = (text) => {
+    setpostData((prevState) => ({ ...prevState, postName: text }));
+  };
+  const handlePostLocation = (text) => {
+    setpostData((prevState) => ({ ...prevState, postLocation: text }));
+  };
+  const handleCameraFlip = () => {
+    if (cameraType === CameraType.back) {
+      setCameraType(CameraType.front);
+    } else {
+      setCameraType(CameraType.back);
+    }
+  };
+  const handleCameraFlashMode = () => {
+    if (flashMode === FlashMode.off) {
+      setFlashMode(FlashMode.on);
+    } else {
+      setFlashMode(FlashMode.off);
+    }
+  };
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-
+  // =============================================================================================
   return (
-    <ScrollView showsVerticalScrollIndica style={styles.container}>
-      <View style={{ paddingBottom: 25 }}>
-        <View style={{ borderWidth: 0, borderRadius: 8, overflow: "hidden" }}>
-          {!photo ? (
-            <Camera
-              flashMode={flashMode}
-              ref={setcameraData}
-              type={cameraType}
-              style={styles.camera}
-            >
-              <View style={styles.topBtnContainer}>
-                <TouchableOpacity onPress={handleCameraFlashMode} style={styles.flashbtn}>
-                  <Entypo
-                    name="flash"
-                    size={25}
-                    color={flashMode === FlashMode.on ? "yellow" : "white"}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleCameraFlip} style={styles.flipCameraBtn}>
-                  <MaterialCommunityIcons name="camera-flip-outline" size={25} color="white" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.bottomBtnContainer}>
-                <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
-                  <Ionicons name="md-camera-sharp" size={30} color="white" />
-                </TouchableOpacity>
-              </View>
-            </Camera>
-          ) : (
+    <View style={{ height: "100%", borderWidth: 0, borderRadius: 8 }}>
+      {!photo ? (
+        <Camera
+          zoom={zoomValue}
+          flashMode={flashMode}
+          ref={setcameraData}
+          type={cameraType}
+          style={styles.camera}
+        >
+          <View style={styles.topBtnContainer}>
+            <TouchableOpacity onPress={handleCameraFlashMode} style={styles.flashbtn}>
+              <Entypo
+                name="flash"
+                size={25}
+                color={flashMode === FlashMode.on ? "yellow" : "white"}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleCameraFlip} style={styles.flipCameraBtn}>
+              <MaterialCommunityIcons name="camera-flip-outline" size={25} color="white" />
+            </TouchableOpacity>
+          </View>
+          <Slider
+            style={styles.zoomSlider}
+            value={0}
+            minimumValue={0}
+            maximumValue={1}
+            step={range}
+            minimumTrackTintColor="gold"
+            maximumTrackTintColor="grey"
+            onValueChange={(value) => setZoomValue(value)}
+          />
+          <View style={styles.bottomBtnContainer}>
+            <TouchableOpacity onPress={takePhoto} style={styles.cameraBtn}>
+              <Ionicons name="md-camera-sharp" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
+        </Camera>
+      ) : (
+        <ScrollView showsVerticalScrollIndica style={styles.container}>
+          <View style={{ paddingBottom: 25, height: "100%" }}>
             <View style={styles.photoContainer}>
               <Image
                 style={{ width: "100%", height: "100%", resizeMode: "contain" }}
                 source={{ uri: photo }}
               />
             </View>
-          )}
-        </View>
+            <Text style={styles.photoActionText}>{photoAction}</Text>
+            <View style={styles.inputsContainer}>
+              <TextInput
+                onChangeText={handlePostName}
+                placeholderTextColor={"#BDBDBD"}
+                style={styles.nameInput}
+                placeholder="Name..."
+                value={postData.postName}
+                cursorColor="#FF6C00"
+              ></TextInput>
+              <TextInput
+                onChangeText={handlePostLocation}
+                placeholderTextColor={"#BDBDBD"}
+                style={styles.locationInput}
+                placeholder="Location..."
+                value={postData.postLocation}
+                cursorColor="#FF6C00"
+              ></TextInput>
 
-        <Text style={styles.photoActionText}>{photoAction}</Text>
-        <View style={styles.inputsContainer}>
-          <TextInput
-            onChangeText={handlePostName}
-            placeholderTextColor={"#BDBDBD"}
-            style={styles.nameInput}
-            placeholder="Name..."
-            value={postData.postName}
-            cursorColor="#FF6C00"
-          ></TextInput>
-          <TextInput
-            onChangeText={handlePostLocation}
-            placeholderTextColor={"#BDBDBD"}
-            style={styles.locationInput}
-            placeholder="Location..."
-            value={postData.postLocation}
-            cursorColor="#FF6C00"
-          ></TextInput>
+              <EvilIcons
+                style={{ position: "absolute", top: 80, left: -5 }}
+                name="location"
+                size={30}
+                color="#BDBDBD"
+              />
+              <View style={styles.switchContainer}>
+                <Text>Public</Text>
+                <Switch
+                  style={{ marginHorizontal: 15 }}
+                  trackColor={{ false: "#767577", true: "#eef0eb" }}
+                  thumbColor={isEnabled ? "#FF6C00" : "#eef0eb"}
+                  ios_backgroundColor="#e0dfdc"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                />
+                <Text>Private</Text>
+              </View>
 
-          <EvilIcons
-            style={{ position: "absolute", top: 80, left: -5 }}
-            name="location"
-            size={30}
-            color="#BDBDBD"
-          />
-          <View style={styles.switchContainer}>
-            <Text>Public</Text>
-            <Switch
-              style={{ marginHorizontal: 15 }}
-              trackColor={{ false: "#767577", true: "#eef0eb" }}
-              thumbColor={isEnabled ? "#FF6C00" : "#eef0eb"}
-              ios_backgroundColor="#e0dfdc"
-              onValueChange={toggleSwitch}
-              value={isEnabled}
-            />
-            <Text>Private</Text>
-          </View>
-
-          <TouchableOpacity
-            disabled={isCreateBtnDisabled}
-            onPress={crestePost}
-            style={isCreateBtnDisabled ? styles.disabledCreatePostBtn : styles.createPostBtn}
-          >
-            <Text
-              style={{
-                ...styles.createPostBtnText,
-                color: !isCreateBtnDisabled ? "white" : "#BDBDBD",
-              }}
+              <TouchableOpacity
+                disabled={isCreateBtnDisabled}
+                onPress={crestePost}
+                style={isCreateBtnDisabled ? styles.disabledCreatePostBtn : styles.createPostBtn}
+              >
+                <Text
+                  style={{
+                    ...styles.createPostBtnText,
+                    color: !isCreateBtnDisabled ? "white" : "#BDBDBD",
+                  }}
+                >
+                  Create Post
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              disabled={isCreateBtnDisabled}
+              onPress={takeNewPhoto}
+              style={styles.deletePhoto}
             >
-              Create Post
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          disabled={isCreateBtnDisabled}
-          onPress={takeNewPhoto}
-          style={styles.deletePhoto}
-        >
-          <AntDesign name="delete" size={20} color="#BDBDBD" />
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+              <AntDesign name="delete" size={20} color="#BDBDBD" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "white",
     paddingBottom: 25,
   },
   camera: {
-    height: 500,
+    height: "100%",
     justifyContent: "space-between",
     alignItems: "center",
   },
@@ -340,21 +344,24 @@ const styles = StyleSheet.create({
   },
   topBtnContainer: {
     width: "100%",
-    paddingTop: 20,
     flexDirection: "row-reverse",
+  },
+  bottomBtnContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   flashbtn: {
     marginRight: "auto",
-    paddingRight: 15,
+    padding: 15,
   },
   flipCameraBtn: {
-    paddingLeft: 15,
+    padding: 15,
   },
   photoContainer: {
     width: "100%",
     height: 300,
   },
-
+  zoomSlider: { transform: [{ rotate: "-90deg" }, { translateY: 160 }], width: 250, height: 20 },
   photoActionText: {
     fontFamily: "Roboto-Regulat",
     fontWeight: "400",
