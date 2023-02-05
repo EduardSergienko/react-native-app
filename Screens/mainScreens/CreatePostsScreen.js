@@ -20,7 +20,7 @@ import { EvilIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../config";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -86,7 +86,8 @@ export default function CreatePostScreen({ navigation }) {
   if (!allPermissionsChecked) {
     return (
       <View style={{ paddingTop: 100 }}>
-        <ActivityIndicator color="#0000ff" size={"large"} />
+        <ActivityIndicator color="#FF6C00" size={"large"} />
+        <Text style={{ textAlign: "center", marginTop: 15 }}>Get current location...</Text>
       </View>
     );
   }
