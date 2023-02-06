@@ -1,17 +1,31 @@
-import { Text, View, Image, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { query, onSnapshot, collection, orderBy, where } from "firebase/firestore";
 import { store } from "../../config";
 import { useState, useEffect } from "react";
 import { FontAwesome, EvilIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
+import { async } from "@firebase/util";
+
 export default function PostsScreen({ navigation }) {
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
 
   const [postsData, setpostsData] = useState(null);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const userState = useSelector((state) => state.auth);
-
+  const [currentImg, setcurrentImg] = useState(null);
+  const [isLoading, setisLoading] = useState(false);
+  console.log(isLoading);
   useEffect(() => {
     getPosts();
   }, []);
@@ -39,6 +53,12 @@ export default function PostsScreen({ navigation }) {
   const handleCommentsShow = (photo, id, currentUserId, commentAmount) => {
     navigation.navigate("Comments", { photo, id, currentUserId, commentAmount });
   };
+  const handleShowFullSizeImg = (img) => {
+    setisLoading(true);
+    setcurrentImg(img);
+    setModalVisible(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
@@ -56,7 +76,12 @@ export default function PostsScreen({ navigation }) {
         data={postsData}
         renderItem={({ item }) => (
           <View style={styles.postItem}>
-            <Image source={{ uri: item.photo }} style={styles.postImg} />
+            <Pressable onPress={() => handleShowFullSizeImg(item.photo)}>
+              <View>
+                <Image source={{ uri: item.photo }} style={styles.postImg} />
+              </View>
+            </Pressable>
+
             <Text>{item.postMessage}</Text>
             <View
               style={{
@@ -111,6 +136,24 @@ export default function PostsScreen({ navigation }) {
                 <Text style={styles.postLocationText}>{item.postLocation}</Text>
               </View>
             </View>
+
+            <Modal
+              onShow={() => setisLoading(false)}
+              animationType="fade"
+              transparent={false}
+              visible={modalVisible}
+            >
+              <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                {isLoading && (
+                  <ActivityIndicator
+                    style={{ alignItems: "center", marginTop: 100 }}
+                    color="#FF6C00"
+                    size="large"
+                  ></ActivityIndicator>
+                )}
+                <Image source={{ uri: currentImg }} style={styles.fullSizeImg} />
+              </Pressable>
+            </Modal>
           </View>
         )}
       ></FlatList>
@@ -122,7 +165,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     height: "100%",
-    // paddingTop: 15,
   },
   postsList: {
     paddingTop: 15,
@@ -138,6 +180,11 @@ const styles = StyleSheet.create({
     height: 240,
     borderRadius: 10,
     marginBottom: 8,
+  },
+  fullSizeImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
   },
   commentAmountNumber: {
     fontSize: 16,
