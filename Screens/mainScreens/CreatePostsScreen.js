@@ -11,6 +11,13 @@ import {
   Linking,
   ActivityIndicator,
 } from "react-native";
+import { PinchGestureHandler, PinchGestureHandlerGestureEvent } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { uuidv4 } from "@firebase/util";
 import { Camera, CameraType, FlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
@@ -27,6 +34,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { store } from "../../config";
 import Slider from "@react-native-community/slider";
+
 export default function CreatePostScreen({ navigation }) {
   // ===============Camera settings=======================================
   const [zoomValue, setZoomValue] = useState(0);
@@ -44,6 +52,24 @@ export default function CreatePostScreen({ navigation }) {
   const [isCreateBtnDisabled, setisCreateBtnDisabled] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
   const { userId, userName } = useSelector((state) => state.auth);
+
+  // =========================Pinching actions=================================
+  const AnimatedImage = Animated.createAnimatedComponent(Image);
+
+  const scale = useSharedValue(1);
+
+  const pinchHandler = useAnimatedGestureHandler({
+    onActive: (event) => {
+      scale.value = event.scale;
+    },
+    onEnd: () => {
+      scale.value = withTiming(1);
+    },
+  });
+  const rStyle = useAnimatedStyle(() => {
+    return { transform: [{ scale: scale.value }] };
+  });
+  // =============================================================================
 
   useEffect(() => {
     (async () => {
@@ -68,7 +94,7 @@ export default function CreatePostScreen({ navigation }) {
         ]);
       } else {
         const { coords } = await Location.getCurrentPositionAsync({});
-        console.log(coords);
+
         setLocation(coords);
         setlocationPermissions(true);
       }
@@ -211,6 +237,7 @@ export default function CreatePostScreen({ navigation }) {
   };
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   // =============================================================================================
+
   return (
     <View style={{ height: "100%", borderWidth: 0, borderRadius: 8 }}>
       {!photo ? (
@@ -253,11 +280,14 @@ export default function CreatePostScreen({ navigation }) {
         <ScrollView showsVerticalScrollIndica style={styles.container}>
           <View style={{ paddingBottom: 25, height: "100%" }}>
             <View style={styles.photoContainer}>
-              <Image
-                style={{ width: "100%", height: "100%", resizeMode: "contain" }}
-                source={{ uri: photo }}
-              />
+              <PinchGestureHandler onGestureEvent={pinchHandler}>
+                <AnimatedImage
+                  style={[{ width: "100%", height: "100%", resizeMode: "contain" }, rStyle]}
+                  source={{ uri: photo }}
+                />
+              </PinchGestureHandler>
             </View>
+
             <Text style={styles.photoActionText}>{photoAction}</Text>
             <View style={styles.inputsContainer}>
               <TextInput
@@ -361,6 +391,7 @@ const styles = StyleSheet.create({
   photoContainer: {
     width: "100%",
     height: 300,
+    overflow: "hidden",
   },
   zoomSlider: { transform: [{ rotate: "-90deg" }, { translateY: 160 }], width: 250, height: 20 },
   photoActionText: {
