@@ -8,6 +8,9 @@ import {
   ImageBackground,
   Dimensions,
   Alert,
+  Modal,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { collection, query, where, onSnapshot, deleteDoc, doc } from "firebase/firestore";
@@ -16,16 +19,18 @@ import { store } from "../../config";
 import { useEffect, useState } from "react";
 import { EvilIcons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { userLogOut, updateuserAvatar } from "../../redux/auth/autnOperation";
-
 import * as ImagePicker from "expo-image-picker";
 import { db } from "../../config";
 import { uuidv4 } from "@firebase/util";
+
 export default function ProfileScreen({ navigation }) {
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
   const [userPostsData, setuserPostsData] = useState(null);
   const [newUserAvatar, setNewUserAvatar] = useState(null);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentImg, setcurrentImg] = useState(null);
+  const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
   const { userId, userName, userAvatar } = useSelector((state) => state.auth);
 
@@ -77,6 +82,11 @@ export default function ProfileScreen({ navigation }) {
       setNewUserAvatar(result.assets[0].uri);
     }
   };
+  const handleShowFullSizeImg = (img) => {
+    setisLoading(true);
+    setcurrentImg(img);
+    setModalVisible(true);
+  };
   const uploadNewUserAvatarToDb = async () => {
     const response = await fetch(newUserAvatar);
     const file = await response.blob();
@@ -125,8 +135,10 @@ export default function ProfileScreen({ navigation }) {
                 color="#BDBDBD"
               />
             </TouchableOpacity>
+            <Pressable onPress={() => handleShowFullSizeImg(item.photo)}>
+              <Image source={{ uri: item.photo }} style={styles.postImg} />
+            </Pressable>
 
-            <Image source={{ uri: item.photo }} style={styles.postImg} />
             <Text>{item.postMessage}</Text>
             <View
               style={{
@@ -182,6 +194,23 @@ export default function ProfileScreen({ navigation }) {
                 <Text style={styles.postLocationText}>{item.postLocation}</Text>
               </View>
             </View>
+            <Modal
+              onShow={() => setisLoading(false)}
+              animationType="fade"
+              transparent={false}
+              visible={modalVisible}
+            >
+              <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                {isLoading && (
+                  <ActivityIndicator
+                    style={{ alignItems: "center", marginTop: 100 }}
+                    color="#FF6C00"
+                    size="large"
+                  ></ActivityIndicator>
+                )}
+                <Image source={{ uri: currentImg }} style={styles.fullSizeImg} />
+              </Pressable>
+            </Modal>
           </View>
         )}
       ></FlatList>
@@ -283,5 +312,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: "-10%",
     bottom: "10%",
+  },
+  fullSizeImg: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
   },
 });

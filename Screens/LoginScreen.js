@@ -14,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { authSignIn } from "../redux/auth/autnOperation";
+
 export default function RegistrationScreen({ navigation, onLayoutRootView }) {
   const initialRegisterState = {
     email: "",
@@ -22,7 +23,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
 
   const [loginFormData, setloginFormData] = useState(initialRegisterState);
   const [formData, setformData] = useState({});
-  const { password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);

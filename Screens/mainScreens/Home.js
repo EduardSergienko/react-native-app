@@ -11,6 +11,7 @@ import { TouchableOpacity, Text } from "react-native";
 import { View } from "react-native";
 import { userLogOut } from "../../redux/auth/autnOperation";
 import { useDispatch } from "react-redux";
+
 const NavTab = createBottomTabNavigator();
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
@@ -36,11 +37,6 @@ export default function Home({ navigation }) {
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           ),
-          // headerLeft: ({ focused, color, size }) => (
-          //   <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 20 }}>
-          //     <MaterialCommunityIcons name="keyboard-backspace" size={24} color="#BDBDBD" />
-          //   </TouchableOpacity>
-          // ),
         }}
       />
       <NavTab.Screen

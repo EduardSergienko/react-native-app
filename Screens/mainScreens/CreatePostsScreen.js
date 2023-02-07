@@ -11,7 +11,7 @@ import {
   Linking,
   ActivityIndicator,
 } from "react-native";
-import { PinchGestureHandler, PinchGestureHandlerGestureEvent } from "react-native-gesture-handler";
+import { PinchGestureHandler } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedGestureHandler,
   useSharedValue,
@@ -204,7 +204,7 @@ export default function CreatePostScreen({ navigation }) {
     const storage = getStorage(db);
     const storageRef = ref(storage, `postImage/${id}`);
 
-    const data = await uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, file);
 
     const getCurrentPhoto = await getDownloadURL(ref(storage, `postImage/${id}`));
     return getCurrentPhoto;

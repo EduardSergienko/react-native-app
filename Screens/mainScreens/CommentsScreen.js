@@ -28,7 +28,6 @@ import { useSelector } from "react-redux";
 
 export default function CommentsScreen({ route }) {
   const { id, commentAmount } = route.params;
-  console.log(id);
   const { userAvatar, userId } = useSelector((state) => state.auth);
   const [photo, setphoto] = useState(null);
   const [autorId, setautorId] = useState(null);
@@ -36,7 +35,6 @@ export default function CommentsScreen({ route }) {
   const [allComments, setallComments] = useState(null);
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
   const [commentsAmount, setCommentsAmount] = useState(commentAmount);
-  console.log(commentsAmount);
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
 
@@ -48,6 +46,7 @@ export default function CommentsScreen({ route }) {
       updatePost();
     }
   }, [userAvatar, commentsAmount]);
+
   const createComment = async () => {
     if (comment !== "") {
       try {
@@ -57,8 +56,8 @@ export default function CommentsScreen({ route }) {
 
         const dateOptions = { year: "numeric", month: "long", day: "numeric", time: "numeric" };
         const commentDate = [];
-        const date = commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
-        const time = commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 5));
+        commentDate.push(new Date().toLocaleDateString("en-GB", dateOptions));
+        commentDate.push(new Date().toLocaleTimeString("en-GB").slice(0, 5));
 
         await addDoc(collection(postsRef, "comments"), {
           comment,

@@ -1,5 +1,4 @@
 import { Alert } from "react-native";
-
 import { db } from "../../config";
 import {
   getAuth,
@@ -9,9 +8,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-
 import { authLogOut, updateUserProfile, updateAvatar } from "./authSlice";
-import { async } from "@firebase/util";
 
 export const authSignUp =
   ({ email, login, password, userAvatar }) =>
@@ -46,7 +43,7 @@ export const authSignIn =
   ({ email, password }) =>
   async (dispatch, getState) => {
     try {
-      const user = await signInWithEmailAndPassword(getAuth(db), email, password);
+      await signInWithEmailAndPassword(getAuth(db), email, password);
     } catch (error) {
       Alert.alert("Please fill in all fields of the form");
       console.log(error.message);

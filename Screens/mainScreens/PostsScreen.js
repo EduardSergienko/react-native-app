@@ -14,18 +14,17 @@ import { store } from "../../config";
 import { useState, useEffect } from "react";
 import { FontAwesome, EvilIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
-import { async } from "@firebase/util";
 
 export default function PostsScreen({ navigation }) {
   const defaultAvatar =
     "https://www.charlotteathleticclub.com/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png";
 
+  const userState = useSelector((state) => state.auth);
   const [postsData, setpostsData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const userState = useSelector((state) => state.auth);
   const [currentImg, setcurrentImg] = useState(null);
   const [isLoading, setisLoading] = useState(false);
-  console.log(isLoading);
+
   useEffect(() => {
     getPosts();
   }, []);
@@ -77,9 +76,7 @@ export default function PostsScreen({ navigation }) {
         renderItem={({ item }) => (
           <View style={styles.postItem}>
             <Pressable onPress={() => handleShowFullSizeImg(item.photo)}>
-              <View>
-                <Image source={{ uri: item.photo }} style={styles.postImg} />
-              </View>
+              <Image source={{ uri: item.photo }} style={styles.postImg} />
             </Pressable>
 
             <Text>{item.postMessage}</Text>

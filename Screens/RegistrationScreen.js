@@ -29,7 +29,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
 
   const [registerFormData, setregisterFormData] = useState(initialRegisterState);
   const [formData, setformData] = useState({});
-  const { login, password, email } = formData;
   const [isPassworHiden, setIsPassworShowing] = useState(true);
   const [togleBtnText, setTogleBtnText] = useState("Show");
   const [isShowKeyboard, setisShowKeyboard] = useState(false);
@@ -88,8 +87,6 @@ export default function RegistrationScreen({ navigation, onLayoutRootView }) {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result.assets[0].uri);
 
     if (!result.canceled) {
       setUserAvatar(result.assets[0].uri);
